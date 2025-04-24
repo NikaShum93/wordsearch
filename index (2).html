@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wordsearch by Nika Shum</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: #0d0d0d;
+      color: #fff;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 40px);
+      gap: 4px;
+    }
+    .cell {
+      width: 40px;
+      height: 40px;
+      background-color: #111;
+      border: 1px solid #00ffff33;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #00ffff;
+      font-size: 20px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .cell.selected {
+      background-color: #00ffff33;
+    }
+    .cell.found {
+      background-color: #00ffcc55;
+      border: 1px solid #00ffcc;
+    }
+    .cell.wrong {
+      background-color: #ff003344 !important;
+      animation: flashRed 0.3s ease-in-out;
+    }
+    .cell.rainbow {
+      animation: rainbow 1s infinite alternate;
+    }
+    @keyframes flashRed {
+      0% { background-color: #ff003388; }
+      100% { background-color: #111; }
+    }
+    @keyframes rainbow {
+      0% { color: red; }
+      20% { color: orange; }
+      40% { color: yellow; }
+      60% { color: green; }
+      80% { color: blue; }
+      100% { color: violet; }
+    }
+    .wordlist {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .word {
+      background: #1a1a1a;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #00ffff33;
+    }
+    .word.found {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+    .label {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: 12px;
+      z-index: 1000;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="label" id="label">🔦 Wordsearch by Nika Shum</div>
+  <div class="grid" id="grid"></div>
+  <div class="wordlist" id="wordlist"></div>
+
+  <audio id="clickSound" src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Button-click-sound.wav"></audio>
+  <audio id="foundSound" src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Ting-sound.mp3"></audio>
+  <audio id="winSound" src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Success-sound-effect.mp3"></audio>
+
+  <script>
+    const gridData = [["G", "J", "J", "U", "L", "E", "T", "Z", "E", "B", "K", "E"], ["B", "D", "A", "J", "O", "Z", "V", "G", "C", "P", "E", "P"], ["F", "B", "L", "H", "C", "I", "M", "A", "P", "X", "Y", "R"], ["U", "S", "A", "O", "K", "R", "M", "B", "K", "H", "N", "C"], ["I", "D", "M", "A", "J", "O", "B", "M", "N", "I", "Z", "M"], ["H", "F", "P", "G", "N", "Y", "Q", "C", "W", "P", "R", "Z"], ["L", "I", "T", "T", "Z", "D", "C", "L", "U", "E", "T", "S"], ["D", "G", "N", "I", "Q", "P", "O", "M", "S", "V", "R", "D"], ["B", "H", "R", "M", "F", "J", "H", "O", "O", "B", "A", "G"], ["C", "O", "A", "X", "M", "P", "K", "Z", "R", "I", "P", "M"], ["H", "S", "B", "Q", "H", "A", "T", "E", "I", "H", "U", "G"], ["R", "T", "V", "J", "R", "X", "C", "O", "D", "E", "I", "I"]];
+    const words = ["HAT", "KEY", "LAMP", "CLUE", "DOOR", "MAP", "GHOST", "CODE", "TRAP", "LOCK"];
+    const grid = document.getElementById("grid");
+    const wordlist = document.getElementById("wordlist");
+    const label = document.getElementById("label");
+    const clickSound = document.getElementById("clickSound");
+    const foundSound = document.getElementById("foundSound");
+    const winSound = document.getElementById("winSound");
+
+    const foundWords = new Set();
+    let selected = [];
+
+    function isStraightLine(cells) {
+      if (cells.length < 2) return true;
+      const dx = cells[1].x - cells[0].x;
+      const dy = cells[1].y - cells[0].y;
+      for (let i = 1; i < cells.length; i++) {
+        if ((cells[i].x - cells[i - 1].x) !== dx || (cells[i].y - cells[i - 1].y) !== dy) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function clearSelection(redFlash = false) {
+      selected.forEach(c => {
+        c.el.classList.remove("selected");
+        if (redFlash) {
+          c.el.classList.add("wrong");
+          setTimeout(() => c.el.classList.remove("wrong"), 300);
+        }
+      });
+      selected = [];
+    }
+
+    function checkWin() {
+      if (foundWords.size === words.length) {
+        winSound.play();
+        document.querySelectorAll('.cell').forEach(c => {
+          c.classList.add('rainbow');
+        });
+      }
+    }
+
+    gridData.forEach((row, y) => {
+      row.forEach((letter, x) => {
+        const cell = document.createElement("div");
+        cell.classList.add("cell");
+        cell.textContent = letter;
+        grid.appendChild(cell);
+
+        cell.addEventListener("click", () => {
+          clickSound.currentTime = 0;
+          clickSound.play();
+
+          if (cell.classList.contains("found")) return;
+
+          const existing = selected.find(c => c.el === cell);
+          if (existing) {
+            cell.classList.remove("selected");
+            selected = selected.filter(c => c.el !== cell);
+            return;
+          }
+
+          cell.classList.add("selected");
+          selected.push({ el: cell, x: x, y: y });
+
+          const guess = selected.map(c => c.el.textContent).join("").toUpperCase();
+
+          if (!isStraightLine(selected)) {
+            if (selected.length >= 3) {
+              clearSelection(true);
+            }
+            return;
+          }
+
+          if (words.includes(guess)) {
+            foundSound.play();
+            selected.forEach(c => {
+              c.el.classList.add("found");
+              c.el.classList.remove("selected");
+            });
+            foundWords.add(guess);
+            document.querySelectorAll(".word").forEach(w => {
+              if (w.textContent.toUpperCase() === guess) {
+                w.classList.add("found");
+              }
+            });
+            selected = [];
+            checkWin();
+          } else {
+            const wrong = !words.some(w => w.startsWith(guess));
+            if (wrong && selected.length >= 3) {
+              clearSelection(true);
+            }
+          }
+        });
+      });
+    });
+
+    words.forEach(word => {
+      const el = document.createElement("div");
+      el.classList.add("word");
+      el.textContent = word;
+      wordlist.appendChild(el);
+    });
+
+    if (document.referrer.includes("genial.ly/editor")) {
+      label.style.display = "block";
+    }
+  </script>
+</body>
+</html>
