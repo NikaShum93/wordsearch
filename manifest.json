@@ -1,10 +1,10 @@
-
 {
-  "name": "Wordsearch by Nika Shum",
-  "author": "Nika Shum",
-  "version": "1.0",
-  "edit": "edit.html",
+  "name": "Wordsearch Game",
+  "description": "Создавайте свои собственные неоновые Wordsearch-игры с индивидуальными словами и уровнями сложности.",
+  "author": "NikaShum93",
+  "version": "1.0.0",
   "main": "main.html",
-  "width": 900,
-  "height": 600
+  "edit": "edit.html",
+  "icon": "https://raw.githubusercontent.com/NikaShum93/wordsearch/main/icon.png",
+  "cover": "https://raw.githubusercontent.com/NikaShum93/wordsearch/main/cover.png"
 }
