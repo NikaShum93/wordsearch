@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Wordsearch Generator</title>
   <style>
     body {
@@ -12,20 +12,21 @@
       padding: 20px;
     }
     .field {
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
     .field label {
       display: block;
       margin-bottom: 6px;
       font-weight: bold;
     }
-    input, select {
+    input, select, textarea {
       padding: 6px;
       border-radius: 4px;
       border: 1px solid #444;
       background: #222;
       color: #fff;
       width: 100%;
+      box-sizing: border-box;
     }
     button {
       background: #00ffff;
@@ -41,19 +42,20 @@
       background: #222;
       padding: 10px;
       border-radius: 6px;
-      word-break: break-all;
       font-size: 14px;
       color: #00ffff;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
-  <h2>🧩 Создай свою Wordsearch-ссылку</h2>
+  <h2>🧩 Создай своё расширение Wordsearch</h2>
 
   <div class="field">
     <label for="words">Слова (через запятую):</label>
     <input id="words" type="text" value="hat,key,lamp,clue,door,map,ghost,code,trap,lock" />
   </div>
+
   <div class="field">
     <label for="level">Сложность:</label>
     <select id="level">
@@ -62,23 +64,29 @@
       <option value="hard">Сложный</option>
     </select>
   </div>
+
   <div class="field">
     <label for="winText">Фраза победы:</label>
     <input id="winText" type="text" value="Ты нашёл все слова! 🔓" />
   </div>
 
-  <button onclick="generateLink()">🎁 Сгенерировать ссылку</button>
+  <button onclick="generateIframe()">✨ Сгенерировать iframe</button>
 
-  <div id="output">Твоя ссылка появится здесь</div>
+  <div id="output"></div>
 
   <script>
-    function generateLink() {
+    function generateIframe() {
       const words = encodeURIComponent(document.getElementById('words').value);
       const level = encodeURIComponent(document.getElementById('level').value);
       const winText = encodeURIComponent(document.getElementById('winText').value);
 
-      const url = window.location.origin + "/wordsearch/main.html?words=" + words + "&level=" + level + "&winText=" + winText;
-      document.getElementById('output').innerHTML = '<strong>Скопируй эту ссылку и вставь в Genially:</strong><br><a href="' + url + '" target="_blank">' + url + '</a>';
+      const url = "https://nikashum93.github.io/wordsearch/main.html?words=" + words + "&level=" + level + "&winText=" + winText;
+      const iframe = '<iframe src="' + url + '" width="900" height="600" frameborder="0" allowfullscreen></iframe>';
+
+      const previewWords = decodeURIComponent(words).split(',').map(w => '🔹 ' + w.trim()).join('\n');
+
+      document.getElementById('output').textContent =
+        'Слова:\n' + previewWords + '\n\nКод для вставки в Genially:\n' + iframe;
     }
   </script>
 </body>
