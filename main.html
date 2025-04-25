@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Wordsearch Game</title>
   <style>
     html, body {
@@ -35,11 +35,27 @@
 <body>
   <div id="grid"></div>
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const words = (urlParams.get("words") || "HAT,KEY,LAMP").split(",");
+    let config = {
+      words: ["HAT", "KEY", "MAP"],
+      level: "medium",
+      winText: "Ты нашёл все слова! 🔓"
+    };
+
+    const stored = localStorage.getItem("wordsearch-config");
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed.words) config.words = parsed.words.split(",").map(w => w.trim().toUpperCase());
+        if (parsed.level) config.level = parsed.level;
+        if (parsed.winText) config.winText = parsed.winText;
+      } catch (e) {
+        console.warn("Ошибка чтения localStorage", e);
+      }
+    }
+
+    const gridEl = document.getElementById("grid");
     const gridSize = 10;
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    const gridEl = document.getElementById("grid");
 
     const grid = Array.from({ length: gridSize }, () =>
       Array.from({ length: gridSize }, () =>
@@ -55,6 +71,10 @@
         gridEl.appendChild(cell);
       });
     });
+
+    console.log("Загруженные слова:", config.words);
+    console.log("Сложность:", config.level);
+    console.log("Фраза победы:", config.winText);
   </script>
 </body>
 </html>
