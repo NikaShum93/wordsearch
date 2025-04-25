@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Редактор Wordsearch</title>
   <style>
     body {
@@ -41,7 +41,7 @@
 <body>
   <div class="field">
     <label for="words">Слова (через запятую):</label>
-    <input id="words" type="text" value="hat,key,lamp,clue,door,map,ghost,code,trap,lock" />
+    <input id="words" type="text" value="hat,key,lamp,clue,door,map,ghost,code,trap,lock">
   </div>
   <div class="field">
     <label for="level">Сложность:</label>
@@ -53,18 +53,32 @@
   </div>
   <div class="field">
     <label for="winText">Фраза победы:</label>
-    <input id="winText" type="text" value="Ты нашёл все слова! 🔓" />
+    <input id="winText" type="text" value="Ты нашёл все слова! 🔓">
   </div>
-  <button onclick="redirect()">Сохранить и открыть игру</button>
+  <button onclick="saveConfig()">💾 Сохранить</button>
 
   <script>
-    function redirect() {
-      const words = encodeURIComponent(document.getElementById('words').value);
-      const level = encodeURIComponent(document.getElementById('level').value);
-      const winText = encodeURIComponent(document.getElementById('winText').value);
-      const url = `main.html?words=${words}&level=${level}&winText=${winText}`;
-      window.location.href = url;
+    function saveConfig() {
+      const config = {
+        words: document.getElementById("words").value,
+        level: document.getElementById("level").value,
+        winText: document.getElementById("winText").value
+      };
+      localStorage.setItem("wordsearch-config", JSON.stringify(config));
+      alert("Сохранено! Открой main.html чтобы увидеть результат.");
     }
+
+    window.onload = function() {
+      const stored = localStorage.getItem("wordsearch-config");
+      if (stored) {
+        try {
+          const config = JSON.parse(stored);
+          document.getElementById("words").value = config.words || "";
+          document.getElementById("level").value = config.level || "medium";
+          document.getElementById("winText").value = config.winText || "";
+        } catch (e) {}
+      }
+    };
   </script>
 </body>
 </html>
