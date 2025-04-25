@@ -1,0 +1,60 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wordsearch Game</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      background: #000;
+      color: #fff;
+    }
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 5px;
+      padding: 20px;
+      justify-content: center;
+    }
+    .cell {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #111;
+      color: #00ffff;
+      font-size: 20px;
+      border: 1px solid #333;
+    }
+  </style>
+</head>
+<body>
+  <div id="grid"></div>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const words = (urlParams.get("words") || "HAT,KEY,LAMP").split(",");
+    const gridSize = 10;
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const gridEl = document.getElementById("grid");
+
+    const grid = Array.from({ length: gridSize }, () =>
+      Array.from({ length: gridSize }, () =>
+        alphabet[Math.floor(Math.random() * alphabet.length)]
+      )
+    );
+
+    grid.forEach((row, y) => {
+      row.forEach((char, x) => {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        cell.textContent = char;
+        gridEl.appendChild(cell);
+      });
+    });
+  </script>
+</body>
+</html>

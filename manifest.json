@@ -1,0 +1,10 @@
+
+{
+  "name": "Wordsearch by Nika Shum",
+  "author": "Nika Shum",
+  "version": "1.0",
+  "edit": "edit.html",
+  "main": "main.html",
+  "width": 900,
+  "height": 600
+}
