@@ -19,17 +19,13 @@
       margin-bottom: 6px;
       font-weight: bold;
     }
-    .words {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    .words input {
+    .words, input, select {
       padding: 6px;
       border-radius: 4px;
       border: 1px solid #444;
       background: #222;
       color: #fff;
+      width: 100%;
     }
     button {
       background: #00ffff;
@@ -38,6 +34,7 @@
       border-radius: 6px;
       cursor: pointer;
       margin-top: 8px;
+      width: 100%;
     }
   </style>
 </head>
@@ -58,26 +55,16 @@
     <label for="winText">Фраза победы:</label>
     <input id="winText" type="text" value="Ты нашёл все слова! 🔓" />
   </div>
-  <button onclick="save()">Сохранить</button>
+  <button onclick="redirect()">Сохранить и открыть игру</button>
 
   <script>
-    const save = () => {
-      const config = {
-        words: document.getElementById('words').value,
-        level: document.getElementById('level').value,
-        winText: document.getElementById('winText').value
-      };
-      parent.postMessage({ pluginMessage: config }, "*");
-    };
-
-    window.addEventListener("message", event => {
-      const config = event.data.pluginMessage;
-      if (config) {
-        document.getElementById('words').value = config.words || "";
-        document.getElementById('level').value = config.level || "medium";
-        document.getElementById('winText').value = config.winText || "";
-      }
-    });
+    function redirect() {
+      const words = encodeURIComponent(document.getElementById('words').value);
+      const level = encodeURIComponent(document.getElementById('level').value);
+      const winText = encodeURIComponent(document.getElementById('winText').value);
+      const url = `main.html?words=${words}&level=${level}&winText=${winText}`;
+      window.location.href = url;
+    }
   </script>
 </body>
 </html>
