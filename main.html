@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Редактор Wordsearch</title>
+  <style>
+    body {
+      background: #111;
+      color: #fff;
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    .field {
+      margin-bottom: 12px;
+    }
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+    .words {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .words input {
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #444;
+      background: #222;
+      color: #fff;
+    }
+    button {
+      background: #00ffff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="field">
+    <label for="words">Слова (через запятую):</label>
+    <input id="words" type="text" value="hat,key,lamp,clue,door,map,ghost,code,trap,lock" />
+  </div>
+  <div class="field">
+    <label for="level">Сложность:</label>
+    <select id="level">
+      <option value="easy">Простой</option>
+      <option value="medium" selected>Средний</option>
+      <option value="hard">Сложный</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="winText">Фраза победы:</label>
+    <input id="winText" type="text" value="Ты нашёл все слова! 🔓" />
+  </div>
+  <button onclick="save()">Сохранить</button>
+
+  <script>
+    const save = () => {
+      const config = {
+        words: document.getElementById('words').value,
+        level: document.getElementById('level').value,
+        winText: document.getElementById('winText').value
+      };
+      parent.postMessage({ pluginMessage: config }, "*");
+    };
+
+    window.addEventListener("message", event => {
+      const config = event.data.pluginMessage;
+      if (config) {
+        document.getElementById('words').value = config.words || "";
+        document.getElementById('level').value = config.level || "medium";
+        document.getElementById('winText').value = config.winText || "";
+      }
+    });
+  </script>
+</body>
+</html>
