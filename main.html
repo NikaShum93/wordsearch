@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Wordsearch Game</title>
+  <title>Wordsearch by Nika Shum</title>
   <style>
-    body {
+    html, body {
       margin: 0;
       padding: 0;
-      font-family: sans-serif;
-      background: #000;
+      background: transparent;
+      font-family: 'Arial', sans-serif;
       color: #fff;
       display: flex;
       justify-content: space-around;
@@ -27,6 +27,7 @@
       grid-template-columns: repeat(10, 1fr);
       gap: 5px;
       padding: 20px;
+      background: transparent;
     }
 
     .cell {
@@ -72,16 +73,29 @@
 
     #wordsList {
       list-style: none;
-      padding: 0;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border: 2px solid #00ffff;
     }
 
     #wordsList li {
-      margin-bottom: 4px;
+      margin-bottom: 6px;
+      padding: 4px;
+      border: 1px solid #00ffff;
+      border-radius: 6px;
+      text-align: center;
     }
 
     #wordsList li.found {
       text-decoration: line-through;
       color: #888;
+    }
+
+    #message {
+      margin-top: 10px;
+      font-size: 18px;
+      text-align: center;
     }
   </style>
 </head>
@@ -93,15 +107,17 @@
   <ul id="wordsList"></ul>
 
   <!-- Звуки -->
-  <audio id="clickSound" src="https://nikashum93.github.io/sounds/click.mp3" preload="auto"></audio>
-  <audio id="errorSound" src="https://nikashum93.github.io/sounds/error.mp3" preload="auto"></audio>
-  <audio id="winSound" src="https://nikashum93.github.io/sounds/win.mp3" preload="auto"></audio>
+  <audio id="clickSound" src="https://nikashum93.github.io/wordsearch/sounds/click.mp3" preload="auto"></audio>
+  <audio id="errorSound" src="https://nikashum93.github.io/wordsearch/sounds/error.mp3" preload="auto"></audio>
+  <audio id="winSound" src="https://nikashum93.github.io/wordsearch/sounds/win.mp3" preload="auto"></audio>
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const words = (urlParams.get("words") || "HAT,KEY,LAMP").split(",").map(w => w.trim().toUpperCase());
+    const words = (urlParams.get("words") || "HAT,KEY,LAMP").split(",").map(w => w.trim());
     const winText = decodeURIComponent(urlParams.get("winText") || "Ты нашёл все слова!");
     const level = urlParams.get("level") || "medium";
+    const caseType = urlParams.get("case") || "upper";
+    const theme = urlParams.get("theme") || "neon";
 
     const gridSize = 10;
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -118,8 +134,29 @@
     errorSound.volume = 0.3;
     winSound.volume = 0.3;
 
+    function applyTheme() {
+      if (theme === "pastel") {
+        document.body.style.background = "transparent";
+        document.documentElement.style.setProperty('--main-color', '#ff99cc');
+      } else if (theme === "dark") {
+        document.body.style.background = "transparent";
+        document.documentElement.style.setProperty('--main-color', '#00ffff');
+      } else if (theme === "kids") {
+        document.body.style.background = "transparent";
+        document.documentElement.style.setProperty('--main-color', '#ffcc00');
+      } else {
+        document.body.style.background = "transparent";
+        document.documentElement.style.setProperty('--main-color', '#00ffff');
+      }
+    }
+
+    function formatLetter(letter) {
+      return caseType === "lower" ? letter.toLowerCase() : letter.toUpperCase();
+    }
+
     function placeWords() {
-      for (const word of words) {
+      for (const wordRaw of words) {
+        const word = formatLetter(wordRaw);
         for (let attempt = 0; attempt < 100; attempt++) {
           const dirOptions = {
             easy: [[1,0],[0,1]],
@@ -152,7 +189,7 @@
 
       for (let y = 0; y < gridSize; y++) {
         for (let x = 0; x < gridSize; x++) {
-          if (!grid[y][x]) grid[y][x] = alphabet[Math.floor(Math.random() * alphabet.length)];
+          if (!grid[y][x]) grid[y][x] = formatLetter(alphabet[Math.floor(Math.random() * alphabet.length)]);
         }
       }
     }
@@ -178,8 +215,8 @@
       wordsListEl.innerHTML = "";
       words.forEach(word => {
         const li = document.createElement("li");
-        li.textContent = word;
-        if (foundWords.includes(word)) li.classList.add("found");
+        li.textContent = formatLetter(word);
+        if (foundWords.includes(formatLetter(word))) li.classList.add("found");
         wordsListEl.appendChild(li);
       });
     }
@@ -205,7 +242,7 @@
 
       const selectedWord = selection.map(c => c.textContent).join("");
 
-      if (words.includes(selectedWord)) {
+      if (words.map(w => formatLetter(w)).includes(selectedWord)) {
         selection.forEach(c => c.classList.add("correct"));
         foundWords.push(selectedWord);
         updateWordList();
@@ -217,7 +254,7 @@
           winSound.play();
         }
       } else {
-        const matching = words.some(word => word.startsWith(selection.map(c => c.textContent).join("")));
+        const matching = words.some(word => formatLetter(word).startsWith(selection.map(c => c.textContent).join("")));
         if (!matching || selection.length > Math.max(...words.map(w => w.length))) {
           errorSound.play();
           clearSelection(true);
@@ -225,6 +262,7 @@
       }
     }
 
+    applyTheme();
     placeWords();
     renderGrid();
     updateWordList();
