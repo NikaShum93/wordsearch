@@ -1,80 +1,221 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Wordsearch Game</title>
   <style>
-    html, body {
+    body {
       margin: 0;
       padding: 0;
       font-family: sans-serif;
       background: #000;
       color: #fff;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      height: 100vh;
     }
+
+    #game {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
     #grid {
       display: grid;
       grid-template-columns: repeat(10, 1fr);
       gap: 5px;
       padding: 20px;
-      justify-content: center;
     }
+
     .cell {
       width: 40px;
       height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       background: #111;
-      color: #00ffff;
-      font-size: 20px;
       border: 1px solid #333;
+      color: #00ffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      user-select: none;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .cell.selected {
+      background: #00ffff;
+      color: #000;
+    }
+
+    .cell.correct {
+      background: #2ecc71;
+    }
+
+    .cell.error {
+      background: #e74c3c;
+    }
+
+    .rainbow {
+      animation: rainbow 1s infinite alternate;
+    }
+
+    @keyframes rainbow {
+      0% { color: red; }
+      20% { color: orange; }
+      40% { color: yellow; }
+      60% { color: lime; }
+      80% { color: blue; }
+      100% { color: violet; }
+    }
+
+    #wordsList {
+      list-style: none;
+      padding: 0;
+    }
+
+    #wordsList li {
+      margin-bottom: 4px;
+    }
+
+    #wordsList li.found {
+      text-decoration: line-through;
+      color: #888;
     }
   </style>
 </head>
 <body>
-  <div id="grid"></div>
-  <script>
-    let config = {
-      words: ["HAT", "KEY", "MAP"],
-      level: "medium",
-      winText: "Ты нашёл все слова! 🔓"
-    };
+  <div id="game">
+    <div id="grid"></div>
+    <p id="message"></p>
+  </div>
+  <ul id="wordsList"></ul>
 
-    const stored = localStorage.getItem("wordsearch-config");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (parsed.words) config.words = parsed.words.split(",").map(w => w.trim().toUpperCase());
-        if (parsed.level) config.level = parsed.level;
-        if (parsed.winText) config.winText = parsed.winText;
-      } catch (e) {
-        console.warn("Ошибка чтения localStorage", e);
+  <audio id="winSound" src="https://nikashum93.github.io/sounds/win.mp3" preload="auto"></audio>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const words = (urlParams.get("words") || "HAT,KEY,LAMP").split(",").map(w => w.trim().toUpperCase());
+    const winText = decodeURIComponent(urlParams.get("winText") || "Ты нашёл все слова!");
+    const level = urlParams.get("level") || "medium";
+
+    const gridSize = 10;
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(""));
+
+    const gridEl = document.getElementById("grid");
+    const wordsListEl = document.getElementById("wordsList");
+    const messageEl = document.getElementById("message");
+    const winSound = document.getElementById("winSound");
+
+    const placedWords = [];
+
+    function placeWords() {
+      for (const word of words) {
+        for (let attempt = 0; attempt < 100; attempt++) {
+          const dirOptions = {
+            easy: [[1,0],[0,1]],
+            medium: [[1,0],[0,1],[1,1]],
+            hard: [[1,0],[0,1],[1,1],[-1,1],[1,-1],[0,-1],[-1,0],[-1,-1]]
+          }[level];
+
+          const [dx, dy] = dirOptions[Math.floor(Math.random() * dirOptions.length)];
+          const x = Math.floor(Math.random() * gridSize);
+          const y = Math.floor(Math.random() * gridSize);
+
+          let fits = true;
+          for (let i = 0; i < word.length; i++) {
+            const nx = x + dx * i;
+            const ny = y + dy * i;
+            if (nx < 0 || ny < 0 || nx >= gridSize || ny >= gridSize) { fits = false; break; }
+            if (grid[ny][nx] && grid[ny][nx] !== word[i]) { fits = false; break; }
+          }
+
+          if (fits) {
+            for (let i = 0; i < word.length; i++) {
+              const nx = x + dx * i;
+              const ny = y + dy * i;
+              grid[ny][nx] = word[i];
+              placedWords.push({ x: nx, y: ny, word });
+            }
+            break;
+          }
+        }
+      }
+
+      for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+          if (!grid[y][x]) grid[y][x] = alphabet[Math.floor(Math.random() * alphabet.length)];
+        }
       }
     }
 
-    const gridEl = document.getElementById("grid");
-    const gridSize = 10;
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let selection = [];
+    let foundWords = [];
 
-    const grid = Array.from({ length: gridSize }, () =>
-      Array.from({ length: gridSize }, () =>
-        alphabet[Math.floor(Math.random() * alphabet.length)]
-      )
-    );
+    function renderGrid() {
+      gridEl.innerHTML = "";
+      for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.dataset.x = x;
+          cell.dataset.y = y;
+          cell.textContent = grid[y][x];
+          gridEl.appendChild(cell);
+        }
+      }
+    }
 
-    grid.forEach((row, y) => {
-      row.forEach((char, x) => {
-        const cell = document.createElement("div");
-        cell.className = "cell";
-        cell.textContent = char;
-        gridEl.appendChild(cell);
+    function updateWordList() {
+      wordsListEl.innerHTML = "";
+      words.forEach(word => {
+        const li = document.createElement("li");
+        li.textContent = word;
+        if (foundWords.includes(word)) li.classList.add("found");
+        wordsListEl.appendChild(li);
       });
-    });
+    }
 
-    console.log("Загруженные слова:", config.words);
-    console.log("Сложность:", config.level);
-    console.log("Фраза победы:", config.winText);
+    function clearSelection(error = false) {
+      selection.forEach(cell => {
+        cell.classList.remove("selected");
+        if (error) cell.classList.add("error");
+        setTimeout(() => cell.classList.remove("error"), 300);
+      });
+      selection = [];
+    }
+
+    function handleClick(e) {
+      if (!e.target.classList.contains("cell")) return;
+
+      const cell = e.target;
+      cell.classList.add("selected");
+      selection.push(cell);
+
+      const selectedWord = selection.map(c => c.textContent).join("");
+      if (words.includes(selectedWord)) {
+        selection.forEach(c => c.classList.add("correct"));
+        foundWords.push(selectedWord);
+        updateWordList();
+        selection = [];
+
+        if (foundWords.length === words.length) {
+          messageEl.textContent = winText;
+          document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow"));
+          winSound.play().catch(() => {});
+        }
+      } else if (selection.length > 2) {
+        clearSelection(true);
+      }
+    }
+
+    placeWords();
+    renderGrid();
+    updateWordList();
+    gridEl.addEventListener("click", handleClick);
   </script>
 </body>
 </html>
