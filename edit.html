@@ -1,92 +1,118 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Wordsearch Generator</title>
+  <meta charset="UTF-8">
+  <title>Редактор Wordsearch by Nika Shum</title>
   <style>
     body {
-      background: #111;
-      color: #fff;
-      font-family: sans-serif;
+      font-family: 'Arial', sans-serif;
+      background: #000;
+      color: #00ffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       padding: 20px;
     }
-    .field {
-      margin-bottom: 16px;
+
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
     }
-    .field label {
+
+    label {
+      margin-top: 15px;
       display: block;
-      margin-bottom: 6px;
       font-weight: bold;
     }
+
     input, select, textarea {
-      padding: 6px;
-      border-radius: 4px;
-      border: 1px solid #444;
-      background: #222;
-      color: #fff;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    button {
-      background: #00ffff;
+      width: 300px;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
       border: none;
-      padding: 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 10px;
+      outline: none;
+      margin-bottom: 10px;
     }
-    #output {
+
+    button {
       margin-top: 20px;
-      background: #222;
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 14px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #00ffff;
+      color: #000;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #00cccc;
+    }
+
+    #iframeCode {
+      margin-top: 20px;
+      background: #111;
       color: #00ffff;
-      white-space: pre-wrap;
+      padding: 10px;
+      border-radius: 10px;
+      word-break: break-word;
+      width: 90%;
+      max-width: 800px;
     }
   </style>
 </head>
 <body>
-  <h2>🧩 Создай своё расширение Wordsearch</h2>
+  <h1>Редактор Wordsearch by Nika Shum</h1>
 
-  <div class="field">
-    <label for="words">Слова (через запятую):</label>
-    <input id="words" type="text" value="hat,key,lamp,clue,door,map,ghost,code,trap,lock" />
-  </div>
+  <label for="words">Введите слова (через запятую):</label>
+  <textarea id="words" rows="3" placeholder="например: lamp, door, trap"></textarea>
 
-  <div class="field">
-    <label for="level">Сложность:</label>
-    <select id="level">
-      <option value="easy">Простой</option>
-      <option value="medium" selected>Средний</option>
-      <option value="hard">Сложный</option>
-    </select>
-  </div>
+  <label for="level">Выберите уровень сложности:</label>
+  <select id="level">
+    <option value="easy">Лёгкий (вправо, вниз)</option>
+    <option value="medium">Средний (добавляется по диагонали)</option>
+    <option value="hard">Сложный (в любом направлении)</option>
+  </select>
 
-  <div class="field">
-    <label for="winText">Фраза победы:</label>
-    <input id="winText" type="text" value="Ты нашёл все слова! 🔓" />
-  </div>
+  <label for="caseType">Регистр букв:</label>
+  <select id="caseType">
+    <option value="upper">ЗАГЛАВНЫЕ</option>
+    <option value="lower">строчные</option>
+  </select>
 
-  <button onclick="generateIframe()">✨ Сгенерировать iframe</button>
+  <label for="theme">Палитра оформления:</label>
+  <select id="theme">
+    <option value="neon">Неон</option>
+    <option value="pastel">Пастель</option>
+    <option value="dark">Тёмная</option>
+    <option value="kids">Детская</option>
+  </select>
 
-  <div id="output"></div>
+  <label for="winText">Фраза победы:</label>
+  <input type="text" id="winText" placeholder="например: Молодец!">
+
+  <button onclick="generateIframe()">✨ Сгенерировать игру</button>
+
+  <div id="iframeCode"></div>
 
   <script>
     function generateIframe() {
-      const words = encodeURIComponent(document.getElementById('words').value);
-      const level = encodeURIComponent(document.getElementById('level').value);
-      const winText = encodeURIComponent(document.getElementById('winText').value);
+      const words = document.getElementById('words').value.trim();
+      const level = document.getElementById('level').value;
+      const caseType = document.getElementById('caseType').value;
+      const theme = document.getElementById('theme').value;
+      const winText = encodeURIComponent(document.getElementById('winText').value.trim());
 
-      const url = "https://nikashum93.github.io/wordsearch/main.html?words=" + words + "&level=" + level + "&winText=" + winText;
-      const iframe = '<iframe src="' + url + '" width="900" height="600" frameborder="0" allowfullscreen></iframe>';
+      if (!words) {
+        alert('Пожалуйста, введите хотя бы одно слово.');
+        return;
+      }
 
-      const previewWords = decodeURIComponent(words).split(',').map(w => '🔹 ' + w.trim()).join('\n');
+      const iframe = `<iframe src="https://nikashum93.github.io/wordsearch/main.html?words=${words}&level=${level}&case=${caseType}&theme=${theme}&winText=${winText}" width="900" height="600" frameborder="0" allowfullscreen></iframe>`;
 
-      document.getElementById('output').textContent =
-        'Слова:\n' + previewWords + '\n\nКод для вставки в Genially:\n' + iframe;
+      document.getElementById('iframeCode').innerText = iframe;
     }
   </script>
 </body>
