@@ -11,7 +11,6 @@
       background: #000;
       color: #fff;
       display: flex;
-      flex-direction: row;
       justify-content: space-around;
       align-items: center;
       height: 100vh;
@@ -59,7 +58,7 @@
     }
 
     .rainbow {
-      animation: rainbow 1s infinite alternate;
+      animation: rainbow 0.5s infinite alternate;
     }
 
     @keyframes rainbow {
@@ -93,6 +92,9 @@
   </div>
   <ul id="wordsList"></ul>
 
+  <!-- Звуки -->
+  <audio id="clickSound" src="https://nikashum93.github.io/sounds/click.mp3" preload="auto"></audio>
+  <audio id="errorSound" src="https://nikashum93.github.io/sounds/error.mp3" preload="auto"></audio>
   <audio id="winSound" src="https://nikashum93.github.io/sounds/win.mp3" preload="auto"></audio>
 
   <script>
@@ -108,9 +110,13 @@
     const gridEl = document.getElementById("grid");
     const wordsListEl = document.getElementById("wordsList");
     const messageEl = document.getElementById("message");
+    const clickSound = document.getElementById("clickSound");
+    const errorSound = document.getElementById("errorSound");
     const winSound = document.getElementById("winSound");
 
-    const placedWords = [];
+    clickSound.volume = 0.3;
+    errorSound.volume = 0.3;
+    winSound.volume = 0.3;
 
     function placeWords() {
       for (const word of words) {
@@ -138,7 +144,6 @@
               const nx = x + dx * i;
               const ny = y + dy * i;
               grid[ny][nx] = word[i];
-              placedWords.push({ x: nx, y: ny, word });
             }
             break;
           }
@@ -182,8 +187,10 @@
     function clearSelection(error = false) {
       selection.forEach(cell => {
         cell.classList.remove("selected");
-        if (error) cell.classList.add("error");
-        setTimeout(() => cell.classList.remove("error"), 300);
+        if (error) {
+          cell.classList.add("error");
+          setTimeout(() => cell.classList.remove("error"), 300);
+        }
       });
       selection = [];
     }
@@ -192,10 +199,12 @@
       if (!e.target.classList.contains("cell")) return;
 
       const cell = e.target;
+      clickSound.play();
       cell.classList.add("selected");
       selection.push(cell);
 
       const selectedWord = selection.map(c => c.textContent).join("");
+
       if (words.includes(selectedWord)) {
         selection.forEach(c => c.classList.add("correct"));
         foundWords.push(selectedWord);
@@ -205,10 +214,14 @@
         if (foundWords.length === words.length) {
           messageEl.textContent = winText;
           document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow"));
-          winSound.play().catch(() => {});
+          winSound.play();
         }
-      } else if (selection.length > 2) {
-        clearSelection(true);
+      } else {
+        const matching = words.some(word => word.startsWith(selection.map(c => c.textContent).join("")));
+        if (!matching || selection.length > Math.max(...words.map(w => w.length))) {
+          errorSound.play();
+          clearSelection(true);
+        }
       }
     }
 
