@@ -9,53 +9,102 @@
       padding: 0;
       background: transparent;
       font-family: 'Arial', sans-serif;
-      color: #fff;
       display: flex;
-      justify-content: space-around;
+      justify-content: center;
       align-items: center;
       height: 100vh;
+    }
+
+    #container {
+      display: flex;
+      gap: 30px;
+      align-items: center;
     }
 
     #game {
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
     }
 
     #grid {
       display: grid;
       grid-template-columns: repeat(10, 1fr);
       gap: 5px;
-      padding: 20px;
       background: transparent;
     }
 
     .cell {
-      width: 40px;
-      height: 40px;
-      background: #111;
-      border: 1px solid #333;
-      color: #00ffff;
+      width: 45px;
+      height: 45px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid var(--main-color, #00ffff);
+      color: var(--main-color, #00ffff);
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 20px;
+      font-size: 22px;
       user-select: none;
       cursor: pointer;
-      transition: 0.2s;
+      transition: 0.3s;
+      border-radius: 8px;
     }
 
     .cell.selected {
-      background: #00ffff;
+      background: var(--main-color, #00ffff);
       color: #000;
     }
 
     .cell.correct {
       background: #2ecc71;
+      color: #000;
     }
 
     .cell.error {
       background: #e74c3c;
+      color: #fff;
+    }
+
+    #wordsList {
+      list-style: none;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border: 2px solid var(--main-color, #00ffff);
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    #wordsList li {
+      margin-bottom: 6px;
+      padding: 4px;
+      border: 1px solid var(--main-color, #00ffff);
+      border-radius: 6px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    #wordsList li.found {
+      text-decoration: line-through;
+      color: #888;
+    }
+
+    #messageBox {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
+      padding: 30px 50px;
+      border-radius: 20px;
+      border: 3px solid var(--main-color, #00ffff);
+      color: var(--main-color, #00ffff);
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+      z-index: 10;
     }
 
     .rainbow {
@@ -70,41 +119,16 @@
       80% { color: blue; }
       100% { color: violet; }
     }
-
-    #wordsList {
-      list-style: none;
-      padding: 10px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 10px;
-      border: 2px solid #00ffff;
-    }
-
-    #wordsList li {
-      margin-bottom: 6px;
-      padding: 4px;
-      border: 1px solid #00ffff;
-      border-radius: 6px;
-      text-align: center;
-    }
-
-    #wordsList li.found {
-      text-decoration: line-through;
-      color: #888;
-    }
-
-    #message {
-      margin-top: 10px;
-      font-size: 18px;
-      text-align: center;
-    }
   </style>
 </head>
 <body>
-  <div id="game">
-    <div id="grid"></div>
-    <p id="message"></p>
+  <div id="container">
+    <div id="game">
+      <div id="grid"></div>
+      <div id="messageBox"></div>
+    </div>
+    <ul id="wordsList"></ul>
   </div>
-  <ul id="wordsList"></ul>
 
   <!-- Звуки -->
   <audio id="clickSound" src="https://nikashum93.github.io/wordsearch/sounds/click.mp3" preload="auto"></audio>
@@ -125,27 +149,23 @@
 
     const gridEl = document.getElementById("grid");
     const wordsListEl = document.getElementById("wordsList");
-    const messageEl = document.getElementById("message");
+    const messageBox = document.getElementById("messageBox");
     const clickSound = document.getElementById("clickSound");
     const errorSound = document.getElementById("errorSound");
     const winSound = document.getElementById("winSound");
 
-    clickSound.volume = 0.3;
-    errorSound.volume = 0.3;
-    winSound.volume = 0.3;
+    clickSound.volume = 1.0;
+    errorSound.volume = 1.0;
+    winSound.volume = 0.8;
 
     function applyTheme() {
       if (theme === "pastel") {
-        document.body.style.background = "transparent";
         document.documentElement.style.setProperty('--main-color', '#ff99cc');
       } else if (theme === "dark") {
-        document.body.style.background = "transparent";
         document.documentElement.style.setProperty('--main-color', '#00ffff');
       } else if (theme === "kids") {
-        document.body.style.background = "transparent";
         document.documentElement.style.setProperty('--main-color', '#ffcc00');
       } else {
-        document.body.style.background = "transparent";
         document.documentElement.style.setProperty('--main-color', '#00ffff');
       }
     }
@@ -249,9 +269,12 @@
         selection = [];
 
         if (foundWords.length === words.length) {
-          messageEl.textContent = winText;
-          document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow"));
           winSound.play();
+          document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow"));
+          setTimeout(() => {
+            messageBox.innerText = winText;
+            messageBox.style.display = "block";
+          }, 500);
         }
       } else {
         const matching = words.some(word => formatLetter(word).startsWith(selection.map(c => c.textContent).join("")));
