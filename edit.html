@@ -13,13 +13,12 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       height: 100vh;
-      overflow: hidden;
+      padding-top: 60px;
     }
 
     h1 {
-      margin-top: 20px;
       color: #0ff;
       text-shadow: 0 0 10px #0ff;
       text-align: center;
@@ -86,6 +85,17 @@
       left: 10px;
       width: 60px;
     }
+
+    #resultContainer {
+      background: #000;
+      border: 1px dashed #0ff;
+      padding: 10px;
+      margin-top: 20px;
+      border-radius: 10px;
+      color: #0ff;
+      font-size: 14px;
+      word-break: break-word;
+    }
   </style>
 </head>
 <body>
@@ -102,22 +112,56 @@
       <option value="hard">Сложный (в любом направлении)</option>
     </select>
 
+    <label for="style">СТИЛЬ ОФОРМЛЕНИЯ:</label>
+    <select id="style">
+      <option value="neon">Неон</option>
+      <option value="pastel">Пастель</option>
+      <option value="kids">Детский</option>
+      <option value="classic">Классический</option>
+    </select>
+
     <label for="winText">ФИНАЛЬНОЕ СООБЩЕНИЕ:</label>
     <input type="text" id="winText" placeholder="Молодец! Все слова найдены!">
 
-    <button onclick="saveSettings()">СГЕНЕРИРОВАТЬ КОД ВСТАВКИ</button>
+    <button onclick="generateIframe()">СГЕНЕРИРОВАТЬ КОД ВСТАВКИ</button>
+
+    <div id="resultContainer" style="display:none;">
+      <div id="resultBox" style="margin-bottom: 10px;"></div>
+      <button onclick="copyIframe()">📋 Скопировать код</button>
+      <div id="copyMsg" style="margin-top:5px; font-size:12px; color:#0f08;"></div>
+    </div>
   </div>
+
   <div class="footer">© Корпорация Геймификации Будущего</div>
 
   <script>
-    function saveSettings() {
+    function generateIframe() {
       const wordsRaw = document.getElementById('words').value;
       const level = document.getElementById('level').value;
+      const style = document.getElementById('style').value;
       const winText = document.getElementById('winText').value;
 
       const wordsList = wordsRaw.split(/[\n,]+/).map(w => w.trim()).filter(w => w);
-      const url = `main.html?words=${encodeURIComponent(wordsList.join(','))}&level=${level}&winText=${encodeURIComponent(winText)}`;
-      window.location.href = url;
+      const params = new URLSearchParams({
+        words: wordsList.join(','),
+        level: level,
+        style: style,
+        winText: winText
+      });
+
+      const iframeCode = `<iframe src="https://nikashum93.github.io/wordsearch/main.html?${params.toString()}" width="960" height="540" frameborder="0" allowfullscreen></iframe>`;
+
+      document.getElementById('resultBox').textContent = iframeCode;
+      document.getElementById('resultContainer').style.display = 'block';
+    }
+
+    function copyIframe() {
+      const text = document.getElementById('resultBox').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const msg = document.getElementById('copyMsg');
+        msg.textContent = 'Скопировано!';
+        setTimeout(() => msg.textContent = '', 2000);
+      });
     }
   </script>
 </body>
