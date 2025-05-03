@@ -1,118 +1,122 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Редактор Wordsearch by Nika Shum</title>
+  <title>Wordsearch Editor — KGB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      background: #000;
-      color: #00ffff;
+      margin: 0;
+      background: radial-gradient(circle, #111 30%, #000 100%);
+      color: #0ff;
+      font-family: 'Orbitron', sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
     }
 
     h1 {
-      margin-bottom: 20px;
-      text-align: center;
+      margin-top: 20px;
+      color: #0ff;
+      text-shadow: 0 0 10px #0ff;
+    }
+
+    .editor-box {
+      background: rgba(0, 0, 0, 0.6);
+      border: 2px solid #0ff;
+      border-radius: 20px;
+      padding: 20px;
+      width: 800px;
+      max-width: 90%;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      box-shadow: 0 0 15px #0ff80f88;
     }
 
     label {
-      margin-top: 15px;
-      display: block;
-      font-weight: bold;
+      font-size: 16px;
     }
 
-    input, select, textarea {
-      width: 300px;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 5px;
-      border: none;
-      outline: none;
-      margin-bottom: 10px;
+    textarea, input, select {
+      width: 100%;
+      padding: 10px;
+      background: #000;
+      color: #0ff;
+      border: 1px solid #0ff;
+      border-radius: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      resize: none;
     }
 
     button {
-      margin-top: 20px;
-      padding: 10px 20px;
+      margin-top: 10px;
+      padding: 12px;
       font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      background-color: #00ffff;
+      background-color: #0ff;
       color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      box-shadow: 0 0 10px #0ff;
+      transition: 0.3s;
     }
 
     button:hover {
       background-color: #00cccc;
+      box-shadow: 0 0 20px #00ffff;
     }
 
-    #iframeCode {
+    .footer {
       margin-top: 20px;
-      background: #111;
-      color: #00ffff;
-      padding: 10px;
-      border-radius: 10px;
-      word-break: break-word;
-      width: 90%;
-      max-width: 800px;
+      font-size: 14px;
+      color: #0ff8;
+      text-align: center;
+    }
+
+    .logo {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 60px;
     }
   </style>
 </head>
 <body>
-  <h1>Редактор Wordsearch by Nika Shum</h1>
+  <img class="logo" src="https://i.imgur.com/I7nMZ3f.png" alt="KGB Logo">
+  <h1>WORDSEARCH EDITOR</h1>
+  <div class="editor-box">
+    <label for="words">WORDS (comma or line separated):</label>
+    <textarea id="words" rows="4" placeholder="apple, banana, robot..."></textarea>
 
-  <label for="words">Введите слова (через запятую):</label>
-  <textarea id="words" rows="3" placeholder="например: lamp, door, trap"></textarea>
+    <label for="level">LEVEL:</label>
+    <select id="level">
+      <option value="easy">Easy (→ ↓)</option>
+      <option value="medium">Medium (+ diagonals)</option>
+      <option value="hard">Hard (any direction)</option>
+    </select>
 
-  <label for="level">Выберите уровень сложности:</label>
-  <select id="level">
-    <option value="easy">Лёгкий (вправо, вниз)</option>
-    <option value="medium">Средний (добавляется по диагонали)</option>
-    <option value="hard">Сложный (в любом направлении)</option>
-  </select>
+    <label for="winText">FINAL MESSAGE:</label>
+    <input type="text" id="winText" placeholder="Well done! You found all words!">
 
-  <label for="caseType">Регистр букв:</label>
-  <select id="caseType">
-    <option value="upper">ЗАГЛАВНЫЕ</option>
-    <option value="lower">строчные</option>
-  </select>
-
-  <label for="theme">Палитра оформления:</label>
-  <select id="theme">
-    <option value="neon">Неон</option>
-    <option value="pastel">Пастель</option>
-    <option value="dark">Тёмная</option>
-    <option value="kids">Детская</option>
-  </select>
-
-  <label for="winText">Фраза победы:</label>
-  <input type="text" id="winText" placeholder="например: Молодец!">
-
-  <button onclick="generateIframe()">✨ Сгенерировать игру</button>
-
-  <div id="iframeCode"></div>
+    <button onclick="saveSettings()">Save & Preview</button>
+  </div>
+  <div class="footer">© Корпорация Геймификации Будущего</div>
 
   <script>
-    function generateIframe() {
-      const words = document.getElementById('words').value.trim();
+    function saveSettings() {
+      const wordsRaw = document.getElementById('words').value;
       const level = document.getElementById('level').value;
-      const caseType = document.getElementById('caseType').value;
-      const theme = document.getElementById('theme').value;
-      const winText = encodeURIComponent(document.getElementById('winText').value.trim());
+      const winText = document.getElementById('winText').value;
 
-      if (!words) {
-        alert('Пожалуйста, введите хотя бы одно слово.');
-        return;
-      }
-
-      const iframe = `<iframe src="https://nikashum93.github.io/wordsearch/main.html?words=${words}&level=${level}&case=${caseType}&theme=${theme}&winText=${winText}" width="900" height="600" frameborder="0" allowfullscreen></iframe>`;
-
-      document.getElementById('iframeCode').innerText = iframe;
+      const wordsList = wordsRaw.split(/[\n,]+/).map(w => w.trim()).filter(w => w);
+      const url = `main.html?words=${encodeURIComponent(wordsList.join(','))}&level=${level}&winText=${encodeURIComponent(winText)}`;
+      window.location.href = url;
     }
   </script>
 </body>
