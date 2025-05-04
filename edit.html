@@ -120,15 +120,19 @@
       <option value="classic">Классический</option>
     </select>
 
+    <label for="case">РЕГИСТР БУКВ:</label>
+    <select id="case">
+      <option value="uppercase">ЗАГЛАВНЫЕ</option>
+      <option value="lowercase">строчные</option>
+    </select>
+
     <label for="winText">ФИНАЛЬНОЕ СООБЩЕНИЕ:</label>
     <input type="text" id="winText" placeholder="Молодец! Все слова найдены!">
 
     <button onclick="generateIframe()">СГЕНЕРИРОВАТЬ КОД ВСТАВКИ</button>
 
     <div id="resultContainer" style="display:none;">
-      <div id="resultBox" style="margin-bottom: 10px;"></div>
-      <button onclick="copyIframe()">📋 Скопировать код</button>
-      <div id="copyMsg" style="margin-top:5px; font-size:12px; color:#0f08;"></div>
+      <div id="resultBox" style="margin-top: 10px;"></div>
     </div>
   </div>
 
@@ -139,6 +143,7 @@
       const wordsRaw = document.getElementById('words').value;
       const level = document.getElementById('level').value;
       const style = document.getElementById('style').value;
+      const letterCase = document.getElementById('case').value;
       const winText = document.getElementById('winText').value;
 
       const wordsList = wordsRaw.split(/[\n,]+/).map(w => w.trim()).filter(w => w);
@@ -146,6 +151,7 @@
         words: wordsList.join(','),
         level: level,
         style: style,
+        case: letterCase,
         winText: winText
       });
 
@@ -153,15 +159,6 @@
 
       document.getElementById('resultBox').textContent = iframeCode;
       document.getElementById('resultContainer').style.display = 'block';
-    }
-
-    function copyIframe() {
-      const text = document.getElementById('resultBox').textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        const msg = document.getElementById('copyMsg');
-        msg.textContent = 'Скопировано!';
-        setTimeout(() => msg.textContent = '', 2000);
-      });
     }
   </script>
 </body>
