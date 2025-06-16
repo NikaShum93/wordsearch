@@ -176,8 +176,10 @@
   </style>
 </head>
 <body>
-  <img id="logo" src="https://nikashum93.github.io/pusyriki/assets/kgb-logo.png" alt="KGB Logo">
-  <div id="kgbHeader">Корпорация Геймификации Будущего</div>
+  <script>const showEditorHeader = new URLSearchParams(window.location.search).get("edit") === "1";</script>
+<script>if (showEditorHeader) { document.write(`<img id="logo" src="https://nikashum93.github.io/pusyriki/assets/kgb-logo.png" alt="KGB Logo">
+  `); }</script>
+<script>if (showEditorHeader) { document.write(`<div id="kgbHeader">Корпорация Геймификации Будущего</div>`); }</script>
   <div id="container">
     <div id="game">
       <div id="grid"></div>
