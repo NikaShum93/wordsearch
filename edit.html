@@ -3,283 +3,283 @@
 <head>
   <meta charset="UTF-8">
   <title>Редактор Wordsearch — КГБ</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Montserrat:wght@600&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
   <style>
-    body {
-      margin: 0;
-      background: radial-gradient(ellipse at center, #181c21 0%, #101214 100%);
-      font-family: 'Montserrat', 'Arial', sans-serif;
+    html, body {
+      margin: 0; padding: 0;
+      width: 100vw; height: 100vh;
+      background: radial-gradient(ellipse at 65% 25%, #1b222a 72%, #16181a 100%);
       color: #0ff;
-      overflow-x: hidden;
-      min-height: 100vh;
+      font-family: 'Orbitron', Arial, sans-serif;
       box-sizing: border-box;
+      overflow: hidden;
     }
-    .wrapper {
+    #container {
       display: flex;
+      gap: 34px;
       justify-content: space-between;
       align-items: flex-start;
-      max-width: 1280px;
-      min-height: 540px;
-      margin: 20px auto 0 auto;
-      gap: 36px;
+      padding: 28px 28px 0 28px;
+      width: 100vw; height: 100vh;
+      box-sizing: border-box;
     }
-    .editor-box {
-      background: rgba(12, 17, 24, 0.85);
-      border: 2px solid #0ff;
-      border-radius: 24px;
-      padding: 28px 30px 16px 30px;
-      min-width: 440px;
-      max-width: 520px;
-      flex: 1 0 440px;
-      box-shadow: 0 0 28px #0ff8, 0 0 2px #000;
+    .settings-panel {
+      width: 56%;
+      min-width: 340px;
+      max-width: 620px;
+      background: rgba(12,24,36,0.74);
+      border: 2.5px solid #0ff;
+      border-radius: 26px;
+      padding: 28px 32px 20px 32px;
+      box-shadow: 0 0 28px #0ff2;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 4px;
+      position: relative;
     }
-    .logo-title {
+    .kgb-header {
       display: flex;
       align-items: center;
-      gap: 15px;
-      margin-bottom: 6px;
+      gap: 18px;
+      margin-bottom: 7px;
     }
-    .logo-title img {
+    .logo {
       width: 54px;
       height: 54px;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #0ff7;
+      background: #fff1;
     }
-    .logo-title .title {
-      font-size: 1.38rem;
-      font-family: 'Orbitron', sans-serif;
+    .big-title {
+      font-size: 1.48em;
       font-weight: bold;
-      text-shadow: 0 0 8px #0ff, 0 0 18px #00ffffcc;
-      letter-spacing: 1px;
-    }
-    label {
-      font-size: 1rem;
-      margin-bottom: 2px;
-      color: #19ffff;
-      letter-spacing: .2px;
-    }
-    textarea, select, input[type="text"] {
-      width: 100%;
-      font-size: 1.08rem;
-      font-family: 'Montserrat', 'Arial', sans-serif;
-      padding: 10px 12px;
-      margin-bottom: 6px;
-      border-radius: 9px;
-      border: 1.6px solid #0ff;
-      background: #12171e;
       color: #0ff;
-      box-shadow: 0 0 6px #0ff2;
-      outline: none;
-      transition: border 0.2s;
+      text-shadow: 0 0 12px #0ff, 0 0 24px #0ff7;
+      margin-bottom: 2px;
+      line-height: 1.13;
+    }
+    .editor-fields label {
+      font-size: 1em;
+      margin-bottom: 2px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+    textarea, input, select {
+      width: 100%;
+      padding: 8px 10px;
+      margin-top: 2px;
+      background: #10151b;
+      color: #0ff;
+      border: 1.8px solid #0ff;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1em;
       resize: none;
+      margin-bottom: 7px;
+      box-sizing: border-box;
     }
-    textarea:focus, select:focus, input[type="text"]:focus {
-      border: 1.6px solid #3fffff;
-    }
+    textarea { height: 42px; min-height: 36px; max-height: 64px; }
+    select, input { height: 32px; }
     .row {
       display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 2px;
+      gap: 11px;
+      margin-bottom: 6px;
     }
-    .checkbox-group {
+    .editor-fields {
       display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-top: 6px;
-      margin-bottom: 2px;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 7px;
     }
-    .checkbox-group label {
-      font-size: 1rem;
-      margin: 0;
+    .editor-fields label:last-child { margin-bottom: 0; }
+    .effect-row {
       display: flex;
+      gap: 18px;
+      margin-bottom: 6px;
       align-items: center;
-      gap: 4px;
-      cursor: pointer;
     }
-    .checkbox-group input[type="checkbox"] {
+    .effect-row label {
+      flex-direction: row;
+      align-items: center;
+      font-size: 1em;
+      gap: 6px;
+      font-family: 'Orbitron', Arial, sans-serif;
+    }
+    .effect-row input[type="checkbox"] {
       accent-color: #0ff;
+      margin-right: 2px;
       width: 18px;
       height: 18px;
     }
-    .footer {
+    .copyright {
       margin-top: 14px;
-      font-size: 0.9rem;
-      color: #0ff7;
+      font-size: 0.94em;
+      color: #0ff8;
+      letter-spacing: 0.02em;
       text-align: left;
     }
-    /* Правая часть */
+    /* Панель кода */
     .code-panel {
-      background: rgba(15,20,25,0.9);
-      border: 2px dashed #0ff;
-      border-radius: 18px;
-      padding: 18px 22px 22px 22px;
-      min-width: 380px;
-      max-width: 420px;
-      flex: 0 0 380px;
-      box-shadow: 0 0 20px #0ff6;
+      width: 41%;
+      min-width: 275px;
+      max-width: 430px;
+      background: rgba(10,18,30,0.74);
+      border: 2.5px dashed #0ff;
+      border-radius: 20px;
+      padding: 22px 16px 16px 16px;
+      margin-top: 23px;
+      box-shadow: 0 0 17px #0ff4;
       display: flex;
       flex-direction: column;
       align-items: stretch;
-      justify-content: flex-start;
     }
-    .code-panel label {
-      font-size: 1rem;
-      margin-bottom: 8px;
+    .code-title {
+      font-size: 1.11em;
+      font-weight: 600;
+      margin-bottom: 9px;
+      text-shadow: 0 0 7px #0ff8;
+    }
+    #resultBox {
+      width: 100%;
+      height: 92px;
+      font-size: 14.3px;
+      margin-bottom: 16px;
+      border-radius: 8px;
+      border: 2px solid #0ff;
+      background: #10161c;
       color: #0ff;
-      text-shadow: 0 0 8px #0ff7;
-    }
-    .code-result {
-      background: #172026;
-      color: #5ff;
-      font-size: 1rem;
-      font-family: 'Fira Mono', 'Consolas', monospace;
-      border: 1px solid #0ff;
-      border-radius: 10px;
-      min-height: 88px;
-      max-width: 100%;
-      word-break: break-all;
-      padding: 13px 14px;
-      margin-bottom: 12px;
-      margin-top: 4px;
-      box-shadow: 0 0 10px #0ff3;
+      font-family: 'Courier New', monospace;
+      resize: none;
+      padding: 8px;
+      box-sizing: border-box;
     }
     .copy-btn {
       width: 100%;
-      background: #17ffff;
-      color: #151d22;
+      background: #0ff;
+      color: #022;
+      font-size: 1.13em;
+      font-weight: bold;
       border: none;
       border-radius: 9px;
       padding: 12px 0 12px 0;
-      font-family: 'Montserrat', sans-serif;
-      font-weight: bold;
-      font-size: 1.09rem;
       cursor: pointer;
-      box-shadow: 0 0 12px #0ff8;
-      margin-bottom: 2px;
-      margin-top: 0;
-      transition: background 0.22s;
+      box-shadow: 0 0 14px #0ffb;
+      transition: background 0.2s;
     }
-    .copy-btn:hover {
-      background: #2afcff;
-      color: #000;
-    }
-    @media (max-width: 1100px) {
-      .wrapper {
-        flex-direction: column;
-        gap: 22px;
-        min-width: 0;
-      }
-      .editor-box, .code-panel {
-        min-width: 0;
-        max-width: 99vw;
-        width: 100%;
-      }
-      .code-panel { align-self: stretch;}
+    .copy-btn:hover { background: #47fff4; color: #033; }
+    /* Responsive */
+    @media (max-width: 1080px) {
+      #container { flex-direction: column; gap: 16px; align-items: stretch; }
+      .settings-panel, .code-panel { width: 100%; max-width: 100vw; }
+      .code-panel { margin-top: 18px; }
     }
   </style>
 </head>
 <body>
-  <div class="wrapper">
-    <div class="editor-box">
-      <div class="logo-title">
-        <img src="https://nikashum93.github.io/pusyriki/assets/kgb-logo.png" alt="КГБ">
-        <div class="title">Корпорация Геймификации Будущего</div>
+  <div id="container">
+    <div class="settings-panel">
+      <div class="kgb-header">
+        <img class="logo" src="https://nikashum93.github.io/pusyriki/assets/kgb-logo.png" alt="KGB">
+        <div>
+          <div class="big-title">Корпорация Геймификации Будущего</div>
+        </div>
       </div>
-      <label for="words">Слова (через запятую или с новой строки):</label>
-      <textarea id="words" rows="3" placeholder="apple, banana, робот..."></textarea>
-      <label for="alphabet">Язык / Алфавит:</label>
-      <select id="alphabet">
-        <option value="latin">Латиница (английский)</option>
-        <option value="cyrillic">Кириллица (русский)</option>
-        <option value="french">Французский</option>
-        <option value="german">Немецкий</option>
-        <option value="spanish">Испанский</option>
-        <option value="japanese">Японский (ひらがな)</option>
-        <!-- Можно добавить ещё -->
-      </select>
-      <label for="case">Регистр букв:</label>
-      <select id="case">
-        <option value="uppercase">ЗАГЛАВНЫЕ</option>
-        <option value="lowercase">строчные</option>
-      </select>
-      <label for="level">Сложность:</label>
-      <select id="level">
-        <option value="easy">Лёгкий (→ ↓)</option>
-        <option value="medium">Средний (+ диагонали)</option>
-        <option value="hard">Сложный (любой)</option>
-      </select>
-      <label for="style">Стиль оформления:</label>
-      <select id="style">
-        <option value="neon">Неон</option>
-        <option value="magic">Магический (блестяшки)</option>
-        <option value="glossy">Глянец</option>
-        <option value="kids">Детский</option>
-        <option value="rainbow">Радужный</option>
-        <option value="classic">Классический</option>
-      </select>
-      <label for="winText">Финальное сообщение:</label>
-      <input type="text" id="winText" placeholder="Молодец! Все слова найдены!">
-      <div class="checkbox-group">
-        <label><input type="checkbox" id="sparkles">✨ Блестяшки</label>
-        <label><input type="checkbox" id="glossy">💎 Глянец</label>
+      <div class="editor-fields">
+        <label>Слова (через запятую или с новой строки):
+          <textarea id="words" placeholder="apple, banana, робот..."></textarea>
+        </label>
+        <label>Язык / Алфавит:
+          <select id="alphabet">
+            <option value="latin">Латиница (английский)</option>
+            <option value="cyrillic">Кириллица (русский)</option>
+            <option value="french">Французский</option>
+            <option value="german">Немецкий</option>
+            <option value="spanish">Испанский</option>
+            <option value="pinyin">Пиньинь (китайский)</option>
+            <option value="hiragana">Хирагана (японский)</option>
+          </select>
+        </label>
+        <div class="row">
+          <label>Регистр букв:
+            <select id="case">
+              <option value="uppercase">ЗАГЛАВНЫЕ</option>
+              <option value="lowercase">строчные</option>
+            </select>
+          </label>
+          <label>Сложность:
+            <select id="level">
+              <option value="easy">Лёгкий (→ ↓)</option>
+              <option value="medium">Средний (+ диагонали)</option>
+              <option value="hard">Сложный (в любом направлении)</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>Стиль оформления:
+            <select id="style">
+              <option value="neon">Неон</option>
+              <option value="kids">Детский</option>
+              <option value="magic">Магический</option>
+              <option value="rainbow">Радужный</option>
+              <option value="pastel">Пастель</option>
+            </select>
+          </label>
+          <label>Финальное сообщение:
+            <input type="text" id="winText" placeholder="Молодец! Все слова найдены!">
+          </label>
+        </div>
+        <div class="effect-row">
+          <label><input type="checkbox" id="sparkles"> Блестяшки</label>
+          <label><input type="checkbox" id="glossy"> Глянец</label>
+        </div>
       </div>
-      <div class="footer">© Корпорация Геймификации Будущего, 2024</div>
+      <div class="copyright">© Корпорация Геймификации Будущего, 2024</div>
     </div>
     <div class="code-panel">
-      <label>Код для вставки в <b>Genially</b>:</label>
-      <div class="code-result" id="resultBox" readonly></div>
+      <div class="code-title">Код для вставки в <b>Genially</b>:</div>
+      <textarea readonly id="resultBox"></textarea>
       <button class="copy-btn" onclick="copyIframe()">Скопировать</button>
     </div>
   </div>
   <script>
-    const alphabetMap = {
-      latin: 'latin',
-      cyrillic: 'cyrillic',
-      french: 'french',
-      german: 'german',
-      spanish: 'spanish',
-      japanese: 'japanese'
-    };
-    function updateIframe() {
+    function generateIframe() {
       const wordsRaw = document.getElementById('words').value;
       const alphabet = document.getElementById('alphabet').value;
-      const letterCase = document.getElementById('case').value;
       const level = document.getElementById('level').value;
       const style = document.getElementById('style').value;
-      const winText = encodeURIComponent(document.getElementById('winText').value);
+      const letterCase = document.getElementById('case').value;
+      const winText = encodeURIComponent(document.getElementById('winText').value.trim() || "");
       const sparkles = document.getElementById('sparkles').checked ? 1 : 0;
       const glossy = document.getElementById('glossy').checked ? 1 : 0;
-
       const wordsList = wordsRaw.split(/[\n,]+/).map(w => w.trim()).filter(w => w);
-
       const params = new URLSearchParams({
         words: wordsList.join(','),
-        alphabet: alphabetMap[alphabet] || 'latin',
-        case: letterCase === 'uppercase' ? 'upper' : 'lower',
-        level: level,
-        style: style,
-        winText: winText,
-        sparkles: sparkles,
-        glossy: glossy
+        alphabet,
+        case: letterCase,
+        level,
+        style,
+        winText,
+        sparkles,
+        glossy
       });
-
-      const iframeCode = `<iframe src="https://nikashum93.github.io/wordsearch/main.html?${params.toString()}" width="960" height="540" frameborder="0" allowfullscreen></iframe>`;
-      document.getElementById('resultBox').textContent = iframeCode;
+      document.getElementById('resultBox').value =
+        `<iframe src="https://nikashum93.github.io/wordsearch/main.html?${params.toString()}" width="960" height="540" frameborder="0" allowfullscreen></iframe>`;
     }
-
     function copyIframe() {
-      const code = document.getElementById('resultBox').textContent;
-      navigator.clipboard.writeText(code);
+      const el = document.getElementById('resultBox');
+      el.select();
+      el.setSelectionRange(0, 99999);
+      document.execCommand('copy');
     }
-
-    // Автообновление iframe-кода
-    document.querySelectorAll('textarea,select,input[type="text"],input[type="checkbox"]').forEach(el => {
-      el.addEventListener('input', updateIframe);
-    });
-    // Первый запуск
-    updateIframe();
+    // Автоматическая генерация iframe-кода при изменении любого поля
+    document.querySelectorAll('textarea, select, input[type="text"], input[type="checkbox"]').forEach(el =>
+      el.addEventListener('input', generateIframe)
+    );
+    // Первичная генерация кода
+    window.onload = generateIframe;
   </script>
 </body>
 </html>
