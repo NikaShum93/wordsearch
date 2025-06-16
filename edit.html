@@ -5,163 +5,214 @@
   <title>Редактор Wordsearch — КГБ</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
   <style>
-    body {
+    html, body {
       margin: 0;
-      background: radial-gradient(circle, #111 30%, #000 100%);
-      color: #0ff;
-      font-family: 'Orbitron', sans-serif;
+      padding: 0;
+      width: 100vw; height: 100vh;
+      background: radial-gradient(circle, #19191c 40%, #07070b 100%);
+      font-family: 'Orbitron', Arial, sans-serif;
+      overflow: hidden;
+    }
+    .container {
       display: flex;
       flex-direction: row;
-      justify-content: space-between;
-      padding: 40px;
+      justify-content: center;
+      align-items: flex-start;
       height: 100vh;
+      width: 100vw;
+      gap: 36px;
       box-sizing: border-box;
+      padding: 38px 36px 0 36px;
+      min-width: 900px;
     }
-
-    .editor-box {
-      background: rgba(0, 0, 0, 0.6);
+    .editor {
+      background: rgba(0,0,0,0.6);
       border: 2px solid #0ff;
-      border-radius: 20px;
-      padding: 20px;
-      width: 55%;
+      border-radius: 18px;
+      box-shadow: 0 0 20px #0ff4;
+      padding: 28px 24px 24px 24px;
+      width: 440px;
+      min-width: 320px;
+      max-width: 520px;
       display: flex;
       flex-direction: column;
-      gap: 15px;
-      box-shadow: 0 0 15px #0ff80f88;
+      gap: 13px;
     }
-
-    .result-box {
-      background: #000;
-      border: 1px dashed #0ff;
-      border-radius: 10px;
-      padding: 15px;
+    .result-block {
+      background: #000c;
+      border: 2px dashed #0ff;
+      border-radius: 12px;
       color: #0ff;
-      width: 40%;
+      padding: 24px 20px 16px 20px;
+      margin-top: 44px;
+      width: 420px;
+      min-width: 260px;
+      max-width: 520px;
       height: fit-content;
-      font-size: 12px;
-      word-break: break-word;
+      font-size: 14px;
+      box-shadow: 0 0 16px #0ff4 inset;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
-
+    .logo-bar {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 6px;
+    }
+    .kgb-logo {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      box-shadow: 0 0 12px #0ff4;
+    }
+    .kgb-title {
+      color: #0ff;
+      font-size: 22px;
+      text-shadow: 0 0 16px #0ff;
+      font-family: 'Orbitron', Arial, sans-serif;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
     label {
       font-size: 14px;
+      margin-bottom: 2px;
+      color: #0ff;
+      text-shadow: 0 0 4px #0ff7;
     }
-
     textarea, input, select {
       width: 100%;
-      padding: 10px;
-      background: #000;
+      padding: 9px 11px;
+      background: #030611;
       color: #0ff;
       border: 1px solid #0ff;
-      border-radius: 8px;
-      font-family: 'Orbitron', sans-serif;
+      border-radius: 7px;
+      font-family: 'Orbitron', Arial, sans-serif;
       font-size: 14px;
-      resize: none;
+      margin-bottom: 4px;
+      margin-top: 1px;
     }
-
     button {
-      padding: 12px;
-      font-size: 16px;
+      padding: 13px 0;
+      font-size: 17px;
       background-color: #0ff;
       color: #000;
       font-weight: bold;
       border: none;
-      border-radius: 10px;
+      border-radius: 9px;
       cursor: pointer;
-      box-shadow: 0 0 10px #0ff;
+      box-shadow: 0 0 12px #0ff7;
       transition: 0.3s;
+      margin-top: 10px;
     }
-
     button:hover {
       background-color: #00cccc;
-      box-shadow: 0 0 20px #00ffff;
+      box-shadow: 0 0 20px #0ff;
     }
-
     .checkboxes {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
+      flex-direction: row;
+      gap: 22px;
+      margin-bottom: 2px;
+      margin-top: 3px;
     }
-
     .footer {
       position: absolute;
+      left: 60px;
       bottom: 10px;
-      left: 80px;
-      font-size: 14px;
+      font-size: 13px;
       color: #0ff8;
+      opacity: 0.85;
+      letter-spacing: 1px;
     }
-
-    .logo {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      width: 50px;
+    .copy-btn {
+      background: #0ff;
+      color: #000;
+      padding: 7px 20px;
+      font-size: 13px;
+      font-family: inherit;
+      font-weight: bold;
+      border: none;
+      border-radius: 7px;
+      margin-top: 7px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #0ff7;
+      transition: background 0.22s;
     }
-
-    h1 {
-      position: absolute;
-      top: 15px;
-      left: 80px;
-      font-size: 20px;
+    .copy-btn:hover { background: #fff; }
+    .codearea {
+      width: 100%;
+      min-height: 65px;
+      border-radius: 6px;
+      margin-top: 8px;
+      font-size: 13px;
+      padding: 7px;
+      background: #101b1f;
       color: #0ff;
-      text-shadow: 0 0 10px #0ff;
+      border: none;
+      box-shadow: 0 0 10px #0ff2 inset;
+      resize: none;
+      font-family: 'Fira Mono', 'Consolas', monospace;
+    }
+    @media (max-width:1100px) {
+      .container { flex-direction: column; align-items: center; gap:22px; padding:16px; }
+      .result-block { margin-top:12px; }
+      .footer { left:12px; font-size:12px;}
     }
   </style>
 </head>
 <body>
-  <img class="logo" src="https://nikashum93.github.io/pusyriki/assets/kgb-logo.png" alt="KGB Logo">
-  <h1>Корпорация Геймификации Будущего</h1>
-
-  <div class="editor-box">
-    <label for="words">Слова (через запятую или с новой строки):</label>
-    <textarea id="words" rows="4" placeholder="apple, banana, robot..."></textarea>
-
-    <label for="alphabet">Язык / Алфавит:</label>
-    <select id="alphabet">
-      <option value="latin">Латиница (английский)</option>
-      <option value="cyrillic">Кириллица (русский)</option>
-      <option value="french">Французский</option>
-      <option value="german">Немецкий</option>
-      <option value="spanish">Испанский</option>
-      <option value="pinyin">Китайский (пиньинь)</option>
-      <option value="hiragana">Японский (хирагана)</option>
-    </select>
-
-    <label for="case">Регистр букв:</label>
-    <select id="case">
-      <option value="uppercase">ЗАГЛАВНЫЕ</option>
-      <option value="lowercase">строчные</option>
-    </select>
-
-    <label for="level">Сложность:</label>
-    <select id="level">
-      <option value="easy">Лёгкий (→ ↓)</option>
-      <option value="medium">Средний (диагонали)</option>
-      <option value="hard">Сложный (все направления)</option>
-    </select>
-
-    <label for="style">Стиль оформления:</label>
-    <select id="style">
-      <option value="neon">Неон</option>
-      <option value="pastel">Пастель</option>
-      <option value="kids">Детский</option>
-      <option value="magic">Магический</option>
-    </select>
-
-    <label for="winText">Финальное сообщение:</label>
-    <input type="text" id="winText" placeholder="Молодец! Все слова найдены!">
-
-    <div class="checkboxes">
-      <label><input type="checkbox" id="sparkles"> ✨ Включить блестяшки</label>
-      <label><input type="checkbox" id="glossy"> 💎 Включить глянец</label>
+  <div class="container">
+    <div class="editor">
+      <div class="logo-bar">
+        <img class="kgb-logo" src="https://nikashum93.github.io/pusyriki/assets/kgb-logo.png" alt="KGB Logo">
+        <div class="kgb-title">Корпорация Геймификации Будущего</div>
+      </div>
+      <label for="words">Слова (через запятую или с новой строки):</label>
+      <textarea id="words" rows="3" placeholder="apple, banana, robot..."></textarea>
+      <label for="alphabet">Язык / Алфавит:</label>
+      <select id="alphabet">
+        <option value="latin">Латиница (английский)</option>
+        <option value="cyrillic">Кириллица (русский)</option>
+        <option value="french">Французский</option>
+        <option value="german">Немецкий</option>
+        <option value="spanish">Испанский</option>
+        <option value="pinyin">Китайский (пиньинь)</option>
+        <option value="hiragana">Японский (хирагана)</option>
+      </select>
+      <label for="case">Регистр букв:</label>
+      <select id="case">
+        <option value="uppercase">ЗАГЛАВНЫЕ</option>
+        <option value="lowercase">строчные</option>
+      </select>
+      <label for="level">Сложность:</label>
+      <select id="level">
+        <option value="easy">Лёгкий (→ ↓)</option>
+        <option value="medium">Средний (диагонали)</option>
+        <option value="hard">Сложный (все направления)</option>
+      </select>
+      <label for="style">Стиль оформления:</label>
+      <select id="style">
+        <option value="neon">Неон</option>
+        <option value="pastel">Пастель</option>
+        <option value="kids">Детский</option>
+        <option value="magic">Магический</option>
+      </select>
+      <label for="winText">Финальное сообщение:</label>
+      <input type="text" id="winText" placeholder="Молодец! Все слова найдены!">
+      <div class="checkboxes">
+        <label><input type="checkbox" id="sparkles"> ✨ Блестяшки</label>
+        <label><input type="checkbox" id="glossy"> 💎 Глянец</label>
+      </div>
+      <button onclick="generateIframe()">Сгенерировать код вставки</button>
     </div>
-
-    <button onclick="generateIframe()">Сгенерировать код вставки</button>
+    <div class="result-block">
+      <label for="codearea">Код для вставки в Genially:</label>
+      <textarea id="codearea" class="codearea" readonly></textarea>
+      <button class="copy-btn" onclick="copyIframe()">Скопировать</button>
+    </div>
   </div>
-
-  <div class="result-box" id="resultBox" style="display:none;"></div>
-
-  <div class="footer">© КГБ</div>
-
+  <div class="footer">© Корпорация Геймификации Будущего, 2024</div>
   <script>
     function generateIframe() {
       const wordsRaw = document.getElementById('words').value;
@@ -172,7 +223,6 @@
       const winText = document.getElementById('winText').value;
       const sparkles = document.getElementById('sparkles').checked ? 1 : 0;
       const glossy = document.getElementById('glossy').checked ? 1 : 0;
-
       const wordsList = wordsRaw.split(/[\n,]+/).map(w => w.trim()).filter(w => w);
 
       const params = new URLSearchParams({
@@ -187,9 +237,13 @@
       });
 
       const iframeCode = `<iframe src="https://nikashum93.github.io/wordsearch/main.html?${params.toString()}" width="960" height="540" frameborder="0" allowfullscreen></iframe>`;
-      const resultBox = document.getElementById('resultBox');
-      resultBox.style.display = 'block';
-      resultBox.textContent = iframeCode;
+      document.getElementById('codearea').value = iframeCode;
+    }
+
+    function copyIframe() {
+      const ta = document.getElementById('codearea');
+      ta.select();
+      document.execCommand('copy');
     }
   </script>
 </body>
