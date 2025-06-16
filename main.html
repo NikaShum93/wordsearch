@@ -1,14 +1,16 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Wordsearch by Nika Shum</title>
+  <title>Wordsearch by KGB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
   <style>
     html, body {
       margin: 0;
       padding: 0;
       background: transparent;
-      font-family: 'Arial', sans-serif;
+      font-family: 'Orbitron', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -36,10 +38,12 @@
     }
 
     .cell {
+      position: relative;
       width: 45px;
       height: 45px;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.3);
       border: 2px solid var(--main-color, #00ffff);
+      box-shadow: 0 0 6px var(--main-color, #00ffff);
       color: var(--main-color, #00ffff);
       display: flex;
       justify-content: center;
@@ -49,6 +53,9 @@
       cursor: pointer;
       transition: 0.3s;
       border-radius: 8px;
+      font-weight: bold;
+      overflow: hidden;
+      text-shadow: 0 0 5px var(--main-color);
     }
 
     .cell.selected {
@@ -64,6 +71,22 @@
     .cell.error {
       background: #e74c3c;
       color: #fff;
+    }
+
+    .cell::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 200%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
+      animation: gloss 3s infinite;
+    }
+
+    @keyframes gloss {
+      0% { transform: translateX(-100%) rotateZ(45deg); }
+      100% { transform: translateX(200%) rotateZ(45deg); }
     }
 
     #wordsList {
@@ -119,9 +142,42 @@
       80% { color: blue; }
       100% { color: violet; }
     }
+
+    .sparkle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: sparkle 0.5s ease-out forwards;
+    }
+
+    @keyframes sparkle {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(2) translateY(-10px); }
+    }
+
+    #kgbHeader {
+      position: absolute;
+      top: 10px;
+      left: 80px;
+      font-size: 18px;
+      color: #0ff;
+      text-shadow: 0 0 10px #0ff;
+    }
+
+    #logo {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 60px;
+    }
   </style>
 </head>
 <body>
+  <img id="logo" src="https://nikashum93.github.io/pusyriki/assets/kgb-logo.png" alt="KGB Logo">
+  <div id="kgbHeader">Корпорация Геймификации Будущего</div>
   <div id="container">
     <div id="game">
       <div id="grid"></div>
@@ -130,18 +186,13 @@
     <ul id="wordsList"></ul>
   </div>
 
-  <!-- Звуки -->
-  <audio id="clickSound" src="https://nikashum93.github.io/wordsearch/click.mp3" preload="auto"></audio>
-  <audio id="errorSound" src="https://nikashum93.github.io/wordsearch/error.mp3" preload="auto"></audio>
-  <audio id="winSound" src="https://nikashum93.github.io/wordsearch/win.mp3" preload="auto"></audio>
-
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const words = (urlParams.get("words") || "HAT,KEY,LAMP").split(",").map(w => w.trim());
     const winText = decodeURIComponent(urlParams.get("winText") || "Ты нашёл все слова!");
     const level = urlParams.get("level") || "medium";
+    const style = urlParams.get("style") || "neon";
     const caseType = urlParams.get("case") || "upper";
-    const theme = urlParams.get("theme") || "neon";
 
     const gridSize = 10;
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -150,23 +201,19 @@
     const gridEl = document.getElementById("grid");
     const wordsListEl = document.getElementById("wordsList");
     const messageBox = document.getElementById("messageBox");
-    const clickSound = document.getElementById("clickSound");
-    const errorSound = document.getElementById("errorSound");
-    const winSound = document.getElementById("winSound");
-
-    clickSound.volume = 1.0;
-    errorSound.volume = 1.0;
-    winSound.volume = 0.8;
 
     function applyTheme() {
-      if (theme === "pastel") {
-        document.documentElement.style.setProperty('--main-color', '#ff99cc');
-      } else if (theme === "dark") {
-        document.documentElement.style.setProperty('--main-color', '#00ffff');
-      } else if (theme === "kids") {
-        document.documentElement.style.setProperty('--main-color', '#ffcc00');
+      const root = document.documentElement;
+      if (style === "pastel") {
+        root.style.setProperty('--main-color', '#ff99cc');
+      } else if (style === "dark") {
+        root.style.setProperty('--main-color', '#00ffff');
+      } else if (style === "kids") {
+        root.style.setProperty('--main-color', '#ffcc00');
+      } else if (style === "magic") {
+        root.style.setProperty('--main-color', '#aaffff');
       } else {
-        document.documentElement.style.setProperty('--main-color', '#00ffff');
+        root.style.setProperty('--main-color', '#00ffff');
       }
     }
 
@@ -175,16 +222,16 @@
     }
 
     function placeWords() {
+      const directions = {
+        easy: [[1,0],[0,1]],
+        medium: [[1,0],[0,1],[1,1]],
+        hard: [[1,0],[0,1],[1,1],[-1,1],[1,-1],[0,-1],[-1,0],[-1,-1]]
+      }[level];
+
       for (const wordRaw of words) {
         const word = formatLetter(wordRaw);
         for (let attempt = 0; attempt < 100; attempt++) {
-          const dirOptions = {
-            easy: [[1,0],[0,1]],
-            medium: [[1,0],[0,1],[1,1]],
-            hard: [[1,0],[0,1],[1,1],[-1,1],[1,-1],[0,-1],[-1,0],[-1,-1]]
-          }[level];
-
-          const [dx, dy] = dirOptions[Math.floor(Math.random() * dirOptions.length)];
+          const [dx, dy] = directions[Math.floor(Math.random() * directions.length)];
           const x = Math.floor(Math.random() * gridSize);
           const y = Math.floor(Math.random() * gridSize);
 
@@ -192,15 +239,15 @@
           for (let i = 0; i < word.length; i++) {
             const nx = x + dx * i;
             const ny = y + dy * i;
-            if (nx < 0 || ny < 0 || nx >= gridSize || ny >= gridSize) { fits = false; break; }
-            if (grid[ny][nx] && grid[ny][nx] !== word[i]) { fits = false; break; }
+            if (nx < 0 || ny < 0 || nx >= gridSize || ny >= gridSize || (grid[ny][nx] && grid[ny][nx] !== word[i])) {
+              fits = false;
+              break;
+            }
           }
 
           if (fits) {
             for (let i = 0; i < word.length; i++) {
-              const nx = x + dx * i;
-              const ny = y + dy * i;
-              grid[ny][nx] = word[i];
+              grid[y + dy * i][x + dx * i] = word[i];
             }
             break;
           }
@@ -213,9 +260,6 @@
         }
       }
     }
-
-    let selection = [];
-    let foundWords = [];
 
     function renderGrid() {
       gridEl.innerHTML = "";
@@ -230,6 +274,9 @@
         }
       }
     }
+
+    let selection = [];
+    let foundWords = [];
 
     function updateWordList() {
       wordsListEl.innerHTML = "";
@@ -255,31 +302,34 @@
     function checkLine() {
       const first = selection[0];
       const last = selection[selection.length - 1];
-
       const dx = last.dataset.x - first.dataset.x;
       const dy = last.dataset.y - first.dataset.y;
-
       return (dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy));
+    }
+
+    function spawnSparkle(x, y) {
+      const sparkle = document.createElement("div");
+      sparkle.className = "sparkle";
+      sparkle.style.left = x + "px";
+      sparkle.style.top = y + "px";
+      document.body.appendChild(sparkle);
+      setTimeout(() => sparkle.remove(), 500);
     }
 
     function handleClick(e) {
       if (!e.target.classList.contains("cell")) return;
-
       const cell = e.target;
-      clickSound.play();
       cell.classList.add("selected");
       selection.push(cell);
-
       const selectedWord = selection.map(c => c.textContent).join("");
 
-      if (words.map(w => formatLetter(w)).includes(selectedWord) && checkLine()) {
+      const formattedWords = words.map(w => formatLetter(w));
+      if (formattedWords.includes(selectedWord) && checkLine()) {
         selection.forEach(c => c.classList.add("correct"));
         foundWords.push(selectedWord);
         updateWordList();
         selection = [];
-
         if (foundWords.length === words.length) {
-          winSound.play();
           document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow"));
           setTimeout(() => {
             messageBox.innerText = winText;
@@ -287,12 +337,14 @@
           }, 500);
         }
       } else {
-        const matching = words.some(word => formatLetter(word).startsWith(selection.map(c => c.textContent).join("")));
-        if (!matching || selection.length > Math.max(...words.map(w => w.length))) {
-          errorSound.play();
+        const partial = formattedWords.some(word => word.startsWith(selection.map(c => c.textContent).join("")));
+        if (!partial || selection.length > Math.max(...formattedWords.map(w => w.length))) {
           clearSelection(true);
         }
       }
+
+      const rect = cell.getBoundingClientRect();
+      spawnSparkle(rect.left + 20, rect.top + 20);
     }
 
     applyTheme();
