@@ -4,9 +4,11 @@
   <meta charset="UTF-8">
   <title>Wordsearch by Nika Shum</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@700&display=swap" rel="stylesheet">
   <style>
     :root {
       --main-color: #00ffff;
+      --kids-border: #ffb700;
     }
     html, body {
       margin: 0; padding: 0;
@@ -60,68 +62,98 @@
       justify-content: center;
       cursor: pointer;
     }
-    .cell.selected {
-      background: var(--main-color, #00ffff);
-      color: #222;
-      box-shadow: 0 0 22px 8px var(--main-color, #00ffff);
+    /* --- Детский стиль --- */
+    .cell.kids {
+      font-family: 'Comic Neue', 'Fredoka One', Arial, sans-serif;
+      font-size: 26px;
+      background: #fff7;
+      color: #111;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 4px var(--kids-border, #ffd600), 0 0 22px #fff8;
+      animation: kids-rainbow 3s linear infinite;
     }
-    .cell.correct {
-      background: #38ff8e;
-      color: #000;
-      box-shadow: 0 0 16px #32ffd6;
+    @keyframes kids-rainbow {
+      0% { box-shadow: 0 0 0 4px #ffd600, 0 0 20px #fff7; }
+      25% { box-shadow: 0 0 0 4px #40c4ff, 0 0 20px #fff7; }
+      50% { box-shadow: 0 0 0 4px #3cff74, 0 0 20px #fff7; }
+      75% { box-shadow: 0 0 0 4px #ee55ff, 0 0 20px #fff7; }
+      100% { box-shadow: 0 0 0 4px #ffd600, 0 0 20px #fff7; }
     }
-    .cell.error {
-      background: #e74c3c;
+    .cell.kids.found {
+      background: #fff9b8;
+      color: #0b9118;
+      border: 3px solid #2fd635;
+      box-shadow: 0 0 0 4px #ffd600, 0 0 30px #8effb7;
+      animation: none;
+    }
+    /* --- Neon --- */
+    .cell.neon.selected { background: var(--main-color); color: #000; }
+    .cell.neon.found {
+      background: #32ffd6; color: #222; border-color: #00ffee; box-shadow: 0 0 25px #19e9ff;
+    }
+    /* --- Magic --- */
+    .cell.magic {
+      background: linear-gradient(110deg, #3321a9 0%, #0fd8e0 100%);
+      border: 2.5px solid #ba65ff;
       color: #fff;
-      animation: error-blink 0.22s 2;
+      box-shadow: 0 0 22px #cfcfff, 0 0 55px #adf8ff77 inset;
+      font-family: 'Orbitron', Arial, sans-serif;
     }
-    @keyframes error-blink {
-      0%,100% { background: #e74c3c; }
-      50% { background: #fff; color:#e74c3c; }
+    .cell.magic.selected {
+      animation: magic-glow 1.2s infinite alternate;
+      box-shadow: 0 0 18px 9px #f8e7ff, 0 0 44px #38ffec99 inset;
+      background: linear-gradient(90deg, #a1f0ff 50%, #e5beff 100%);
+      color: #24243e;
     }
-    /* Глянец */
-    .cell.glossy::after {
-      content: "";
-      pointer-events: none;
+    @keyframes magic-glow {
+      0% { box-shadow: 0 0 18px 9px #f8e7ff, 0 0 44px #38ffec99 inset; }
+      100% { box-shadow: 0 0 24px 11px #bafffc, 0 0 66px #f2aaff77 inset; }
+    }
+    .cell.magic.found {
+      background: #fff5f6;
+      color: #9746e3;
+      border: 2.5px solid #38ffec;
+      box-shadow: 0 0 26px #fff7, 0 0 42px #ffb3f6bb;
+      animation: none;
+    }
+    .cell.magic::after {
+      content: '';
+      display: block;
       position: absolute;
-      top: -14px;
-      left: -27px;
-      width: 120%;
-      height: 32px;
-      background: linear-gradient(120deg, transparent 36%, rgba(255,255,255,0.32) 52%, transparent 67%);
-      border-radius: 80%;
-      filter: blur(1.1px);
-      animation: gloss 2.5s linear infinite;
+      left: -18px; top: -14px; width: 80px; height: 24px;
+      background: linear-gradient(120deg, transparent 40%, #ffffff33 50%, transparent 60%);
+      filter: blur(2px);
+      border-radius: 25px;
+      opacity: 0.6;
+      animation: shimmer 2.5s infinite;
+      pointer-events: none;
     }
-    @keyframes gloss {
-      0% { transform: translateX(-100px) rotateZ(18deg);}
-      100% { transform: translateX(120px) rotateZ(18deg);}
+    @keyframes shimmer {
+      0% { left: -60px; }
+      100% { left: 44px; }
     }
-    /* Радужный неоновый анимированный текст */
+    /* --- Rainbow --- */
     .cell.rainbow {
       animation: rainbow-glow 2.1s linear infinite;
     }
     @keyframes rainbow-glow {
-      0%   { text-shadow: 0 0 20px #ff00c8, 0 0 30px #fff7;}
-      20%  { text-shadow: 0 0 20px #fff600, 0 0 30px #fff7;}
-      40%  { text-shadow: 0 0 20px #38ff8e, 0 0 30px #fff7;}
-      60%  { text-shadow: 0 0 20px #40c4ff, 0 0 30px #fff7;}
-      80%  { text-shadow: 0 0 20px #b666ff, 0 0 30px #fff7;}
-      100% { text-shadow: 0 0 20px #ff00c8, 0 0 30px #fff7;}
+      0%   { text-shadow: 0 0 20px #ff00c8, 0 0 30px #fff7; color: #ff00c8;}
+      20%  { text-shadow: 0 0 20px #fff600, 0 0 30px #fff7; color: #fff600;}
+      40%  { text-shadow: 0 0 20px #38ff8e, 0 0 30px #fff7; color: #38ff8e;}
+      60%  { text-shadow: 0 0 20px #40c4ff, 0 0 30px #fff7; color: #40c4ff;}
+      80%  { text-shadow: 0 0 20px #b666ff, 0 0 30px #fff7; color: #b666ff;}
+      100% { text-shadow: 0 0 20px #ff00c8, 0 0 30px #fff7; color: #ff00c8;}
     }
-    /* Детский — шрифт и цвета */
-    .cell.kids {
-      font-family: 'Comic Neue', 'Fredoka One', Arial, sans-serif;
-      font-size: 26px;
-      background: #181e28;
-      color: #fff;
-      border-width: 3px;
-      border-radius: 14px;
-      text-shadow: 0 0 4px #fff, 0 0 13px #fff7;
-      box-shadow: 0 0 14px #fff4, 0 0 1.5px #fff, 0 0 4px #2228;
-      font-weight: bold;
-      letter-spacing: 0.01em;
-      transition: border 0.18s, box-shadow 0.18s;
+    /* --- Остальные эффекты --- */
+    .cell.selected { outline: 2px solid #fff4; }
+    .cell.error {
+      background: #e74c3c !important;
+      color: #fff !important;
+      animation: error-blink 0.24s 2;
+    }
+    @keyframes error-blink {
+      0%,100% { background: #e74c3c; }
+      50% { background: #fff; color:#e74c3c; }
     }
     #wordsList {
       list-style: none;
@@ -136,10 +168,6 @@
       font-size: 18px;
       margin-left: 0;
     }
-    #wordsList.kids {
-      border: 3px solid #40c4ff;
-      background: #181e2840;
-    }
     #wordsList li {
       margin-bottom: 9px;
       padding: 6px;
@@ -150,17 +178,9 @@
       background: rgba(255,255,255,0.06);
       transition: background 0.2s;
     }
-    #wordsList.kids li {
-      border: 2px solid #40c4ff;
-      background: #22315e;
-      color: #fff;
-      font-family: 'Comic Neue', 'Fredoka One', Arial, sans-serif;
-      font-size: 21px;
-      margin-bottom: 12px;
-    }
     #wordsList li.found {
       text-decoration: line-through;
-      color: #aaa;
+      color: #888;
       background: #aaffc66a;
       border: 1px solid #8eeabd;
     }
@@ -222,7 +242,6 @@
     const sparklesOn = urlParams.get("sparkles") === "1";
     const glossyOn = urlParams.get("glossy") === "1";
     const alphabet = urlParams.get("alphabet") || "latin";
-
     // --- АЛФАВИТЫ ---
     const alphabets = {
       latin: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
@@ -233,32 +252,38 @@
       pinyin: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
       hiragana: "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん"
     };
-
     // --- ГРИД ---
     const gridSize = 10;
-    const alphabetSet = alphabets[alphabet] || alphabets.latin;
+    let alphabetSet = alphabets[alphabet] || alphabets.latin;
+    if (caseType === "lowercase") {
+      if (alphabet === "latin" || alphabet === "french" || alphabet === "german" || alphabet === "spanish" || alphabet === "pinyin") {
+        alphabetSet = alphabetSet.toLowerCase();
+      }
+      if (alphabet === "cyrillic") {
+        alphabetSet = alphabetSet.replace(/Ё/g, "ё").replace(/А|Б|В|Г|Д|Е|Ж|З|И|Й|К|Л|М|Н|О|П|Р|С|Т|У|Ф|Х|Ц|Ч|Ш|Щ|Ъ|Ы|Ь|Э|Ю|Я/g, m => m.toLowerCase());
+      }
+    }
     const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(""));
-
     const gridEl = document.getElementById("grid");
     const wordsListEl = document.getElementById("wordsList");
     const messageBox = document.getElementById("messageBox");
     const clickSound = document.getElementById("clickSound");
     const errorSound = document.getElementById("errorSound");
     const winSound = document.getElementById("winSound");
-
-    clickSound.volume = 1.0;
-    errorSound.volume = 1.0;
-    winSound.volume = 0.8;
+    clickSound.volume = 1.0; errorSound.volume = 1.0; winSound.volume = 0.9;
 
     // --- ТЕМА/СТИЛЬ ---
-    function applyTheme() {
-      let color = "#00ffff";
-      if (style === "neon") color = "#00ffff";
-      if (style === "pastel") color = "#ff99cc";
-      if (style === "kids") color = "#40c4ff";
-      if (style === "magic") color = "#38ffec";
-      if (style === "rainbow") color = "#ff00c8";
-      document.documentElement.style.setProperty('--main-color', color);
+    function getCellClass() {
+      if (style === "kids") return "kids";
+      if (style === "magic") return "magic";
+      if (style === "rainbow") return "rainbow";
+      if (style === "neon") return "neon";
+      return "";
+    }
+    // --- ДЕТСКИЙ ЦВЕТ РАМКИ ---
+    function getKidsBorder(x, y) {
+      const palette = ["#ff7c4d", "#ffd600", "#3cff74", "#40c4ff", "#ee55ff"];
+      return palette[(x + y) % palette.length];
     }
 
     // --- РЕГИСТР ---
@@ -267,14 +292,11 @@
       return letter.toUpperCase();
     }
 
-    // --- Радужные цвета для детских клеток ---
-    const kidsPalette = [
-      "#ff4da6", "#ffd600", "#3cff74", "#40c4ff", "#ee55ff", "#ff7c4d", "#fff600"
-    ];
-
-    // --- ВСТАВКА СЛОВ ---
+    // --- ВСТАВКА СЛОВ (ГАРАНТИЯ 100%) ---
     function placeWords() {
+      // Очищаем сетку
       for (let y = 0; y < gridSize; y++) for (let x = 0; x < gridSize; x++) grid[y][x] = "";
+      let actuallyPlaced = [];
       for (const wordRaw of words) {
         const word = formatWord(wordRaw);
         let placed = false;
@@ -298,14 +320,16 @@
               const nx = x + dx * i, ny = y + dy * i;
               grid[ny][nx] = word[i];
             }
+            actuallyPlaced.push(wordRaw);
             placed = true;
             break;
           }
         }
         if (!placed) {
-          console.warn('Не удалось вставить слово: ' + wordRaw);
+          alert('Не удалось вставить слово: ' + wordRaw);
         }
       }
+      // Заполняем оставшиеся клетки
       for (let y = 0; y < gridSize; y++) {
         for (let x = 0; x < gridSize; x++) {
           if (!grid[y][x]) {
@@ -315,48 +339,35 @@
         }
       }
     }
+    // --- СЛОВО В ПРАВИЛЬНОМ РЕГИСТРЕ/АЛФАВИТЕ ---
     function formatWord(word) {
       return [...word]
-        .map(l => l.normalize('NFD').replace(/[\u0300-\u036f]/g, ''))
+        .map(l => l.normalize('NFD').replace(/[\u0300-\u036f]/g, '')) // убрать диакритику
         .map(l => {
           let up = l.toUpperCase();
-          if (alphabetSet.includes(up)) return formatLetter(up);
+          if (alphabetSet.includes(up) || alphabetSet.includes(up.toLowerCase())) return formatLetter(up);
           return null;
         })
         .filter(l => l !== null);
     }
-
     // --- ОТРИСОВКА ---
+    let cellRefs = [];
     function renderGrid() {
       gridEl.innerHTML = "";
+      cellRefs = [];
       for (let y = 0; y < gridSize; y++) {
         for (let x = 0; x < gridSize; x++) {
           const cell = document.createElement("div");
-          cell.className = "cell";
-          // Детский стиль — радужные рамки и "Comic Neue"
+          cell.className = "cell " + getCellClass();
           if (style === "kids") {
-            cell.classList.add("kids");
-            const color = kidsPalette[(x + y) % kidsPalette.length];
-            cell.style.borderColor = color;
-            cell.style.boxShadow = `0 0 9px 2px ${color}, 0 0 4px #fff8`;
+            cell.style.borderColor = getKidsBorder(x, y);
           }
-          if (style === "magic" || sparklesOn) cell.classList.add("glossy");
-          if (style === "rainbow") cell.classList.add("rainbow");
-          if (style === "neon") cell.classList.add("glossy");
-          cell.style.fontFamily = (style === "kids")
-            ? "'Comic Neue', 'Fredoka One', Arial, sans-serif"
-            : "'Orbitron', Arial, sans-serif";
           cell.dataset.x = x;
           cell.dataset.y = y;
           cell.textContent = grid[y][x];
           gridEl.appendChild(cell);
+          cellRefs.push(cell);
         }
-      }
-      // Список слов — радужная рамка только для kids
-      if (style === "kids") {
-        wordsListEl.classList.add("kids");
-      } else {
-        wordsListEl.classList.remove("kids");
       }
     }
 
@@ -377,6 +388,7 @@
         sparkle.className = 'sparkle';
         sparkle.style.left = x + 'px';
         sparkle.style.top = y + 'px';
+        // Направление
         const angle = Math.random() * 2 * Math.PI;
         const dist = 21 + Math.random() * 18;
         sparkle.style.setProperty('--tx', `${Math.cos(angle)*dist}px`);
@@ -386,9 +398,10 @@
       }
     }
 
+    // --- ВЗАИМОДЕЙСТВИЕ ---
     let selection = [];
     let foundWords = [];
-
+    let foundCells = [];
     function checkLine() {
       if (selection.length < 2) return false;
       const first = selection[0];
@@ -397,7 +410,6 @@
       const dy = last.dataset.y - first.dataset.y;
       return (dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy));
     }
-
     function clearSelection(error = false) {
       selection.forEach(cell => {
         cell.classList.remove("selected");
@@ -408,44 +420,60 @@
       });
       selection = [];
     }
-
     function handleClick(e) {
       if (!e.target.classList.contains("cell")) return;
       const cell = e.target;
-      clickSound.currentTime = 0;
-      clickSound.play();
+      clickSound.currentTime = 0; clickSound.play();
+      if (foundCells.includes(cell)) return; // Уже найденное слово
       cell.classList.add("selected");
       selection.push(cell);
       if ((style === "magic" || sparklesOn) && selection.length === 1) {
+        // Только при первом клике
         const rect = cell.getBoundingClientRect();
         createSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2, document.body);
       }
       const selectedWord = selection.map(c => c.textContent).join("");
-      if (words.map(w => formatWord(w).join("")).includes(selectedWord) && checkLine()) {
-        selection.forEach(c => c.classList.add("correct"));
+      const foundMatch = words.map(w => formatWord(w).join("")).includes(selectedWord) && checkLine();
+      if (foundMatch) {
+        selection.forEach(c => {
+          c.classList.add("found");
+          foundCells.push(c);
+          if (style === "kids") {
+            c.classList.add("kids", "found");
+            c.style.background = "#fff8d7";
+            c.style.color = "#2d950e";
+            c.style.borderColor = "#ffd600";
+            c.style.boxShadow = "0 0 0 4px #ffd600, 0 0 40px #ffedab";
+          }
+        });
         foundWords.push(selectedWord);
         updateWordList();
         selection = [];
+        if (style === "kids" || sparklesOn) {
+          // блёстки!
+          const rect = cell.getBoundingClientRect();
+          createSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2, document.body);
+        }
+        winSound.currentTime = 0;
+        winSound.play();
         if (foundWords.length === words.length) {
-          winSound.play();
-          document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow"));
           setTimeout(() => {
             messageBox.innerText = winText;
             messageBox.style.display = "block";
-          }, 650);
+            document.querySelectorAll(".cell").forEach(c => c.classList.add("rainbow"));
+          }, 700);
         }
       } else {
         const matching = words.some(word =>
           formatWord(word).join("").startsWith(selection.map(c => c.textContent).join("")));
         if (!matching || selection.length > Math.max(...words.map(w => formatWord(w).length))) {
-          errorSound.currentTime = 0;
-          errorSound.play();
+          errorSound.currentTime = 0; errorSound.play();
           clearSelection(true);
         }
       }
     }
 
-    applyTheme();
+    // --- СТАРТ ---
     placeWords();
     renderGrid();
     updateWordList();
