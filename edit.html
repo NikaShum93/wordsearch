@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -108,7 +109,7 @@
     <label for="level">СЛОЖНОСТЬ:</label>
     <select id="level">
       <option value="easy">Лёгкий (→ ↓)</option>
-      <option value="medium">Средний (+ диагонали)</option>
+      <option value="medium" selected>Средний (+ диагонали)</option>
       <option value="hard">Сложный (в любом направлении)</option>
     </select>
 
@@ -117,13 +118,13 @@
       <option value="neon">Неон</option>
       <option value="pastel">Пастель</option>
       <option value="kids">Детский</option>
-      <option value="classic">Классический</option>
+      <option value="magic">Магический (блестяшки)</option>
     </select>
 
     <label for="case">РЕГИСТР БУКВ:</label>
     <select id="case">
-      <option value="uppercase">ЗАГЛАВНЫЕ</option>
-      <option value="lowercase">строчные</option>
+      <option value="upper">ЗАГЛАВНЫЕ</option>
+      <option value="lower">строчные</option>
     </select>
 
     <label for="winText">ФИНАЛЬНОЕ СООБЩЕНИЕ:</label>
@@ -146,7 +147,8 @@
       const letterCase = document.getElementById('case').value;
       const winText = document.getElementById('winText').value;
 
-      const wordsList = wordsRaw.split(/[\n,]+/).map(w => w.trim()).filter(w => w);
+      const wordsList = wordsRaw.split(/[
+,]+/).map(w => w.trim()).filter(w => w);
       const params = new URLSearchParams({
         words: wordsList.join(','),
         level: level,
