@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <title>Wordsearch by Nika Shum</title>
   <meta name="viewport" content="width=960, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <!-- Стили-шрифты для всех режимов! -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Comic+Neue:wght@700&family=Fredoka+One&display=swap" rel="stylesheet">
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       background: transparent !important;
-      font-family: 'Orbitron', Arial, sans-serif;
+      font-family: var(--main-font, 'Orbitron', Arial, sans-serif);
       width: 100vw; height: 100vh;
     }
     #container {
@@ -18,163 +18,155 @@
       gap: 30px;
       align-items: flex-start;
       justify-content: center;
-      height: 100vh;
-      width: 100vw;
+      height: 100vh; width: 100vw;
     }
     #game {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      z-index: 2;
+      display: flex; flex-direction: column;
+      align-items: center; position: relative; z-index: 2;
     }
     #grid {
       display: grid;
       grid-template-columns: repeat(10, 1fr);
-      gap: 6px;
+      gap: 7px;
       background: transparent;
+      padding-bottom: 16px;
     }
     .cell {
-      width: 45px;
-      height: 45px;
+      width: 44px; height: 44px;
       background: var(--cell-bg, rgba(0,0,0,0.5));
       border: 2px solid var(--main-color, #00ffff);
       color: var(--main-color, #00ffff);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 22px;
-      user-select: none;
-      cursor: pointer;
-      transition: 0.3s;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 24px;
+      user-select: none; cursor: pointer;
+      transition: 0.18s;
       border-radius: 10px;
-      box-shadow: 0 0 8px var(--main-color, #00ffff);
-      position: relative;
-      overflow: hidden;
+      box-shadow: 0 0 7px var(--main-color, #00ffff);
+      position: relative; overflow: visible;
+      font-family: var(--cell-font, 'Orbitron', Arial, sans-serif);
     }
     .cell.selected {
       background: var(--main-color, #00ffff);
-      color: #000;
-      box-shadow: 0 0 24px var(--main-color, #00ffff), 0 0 50px #fff4 inset;
+      color: #fff;
+      box-shadow: 0 0 20px var(--main-color, #00ffff), 0 0 50px #fff6 inset;
+      filter: brightness(1.13);
+      z-index: 2;
     }
     .cell.correct {
-      background: #2ecc71;
-      color: #fff;
-      animation: foundAnim 0.5s;
-      box-shadow: 0 0 16px #2ecc71, 0 0 50px #fff4 inset;
+      background: #46ff7a;
+      color: #111;
+      animation: foundAnim 0.4s;
+      box-shadow: 0 0 15px #b8ffda, 0 0 40px #fff4 inset;
+      z-index: 1;
     }
     .cell.error {
       background: #e74c3c;
       color: #fff;
       animation: errorAnim 0.3s;
       box-shadow: 0 0 12px #e74c3c, 0 0 30px #fff4 inset;
+      z-index: 10;
     }
     @keyframes errorAnim {
-      0% { box-shadow: 0 0 12px #e74c3c, 0 0 10px #fff4 inset;}
-      100% { box-shadow: 0 0 2px #e74c3c, 0 0 0px #fff4 inset;}
+      0% { box-shadow: 0 0 20px #e74c3c, 0 0 20px #fff4 inset;}
+      100% { box-shadow: 0 0 3px #e74c3c, 0 0 0px #fff4 inset;}
     }
     @keyframes foundAnim {
-      0% { filter: brightness(1.6);}
+      0% { filter: brightness(1.8);}
       100% { filter: brightness(1);}
     }
-    /* Magic style - glossy */
     .cell.glossy::after {
       content: "";
-      display: block;
       position: absolute;
-      left: 6px; top: 6px;
-      width: 32px; height: 12px;
-      border-radius: 50%;
-      background: linear-gradient(90deg, #fff8, #fff2 70%, transparent 100%);
-      opacity: 0.7;
+      left: 7px; top: 8px;
+      width: 32px; height: 13px;
+      border-radius: 30px 30px 19px 19px / 25px 25px 15px 15px;
+      background: linear-gradient(90deg, #fff7, #fff2 70%, transparent 100%);
+      opacity: 0.85;
       pointer-events: none;
-      animation: glossAnim 2s infinite alternate;
+      animation: glossAnim 2.4s infinite alternate;
+      z-index: 2;
     }
     @keyframes glossAnim {
       0% { opacity: 0.7; }
-      100% { opacity: 0.95; }
+      100% { opacity: 1; }
     }
-    /* Sparkle magic */
+    /* SPARKLES!!! */
     .sparkle {
       position: absolute;
-      width: 10px; height: 10px;
+      width: 12px; height: 12px;
       pointer-events: none;
       border-radius: 50%;
       background: radial-gradient(circle,#fff,#6ff,#0ff 70%,transparent 100%);
-      opacity: 0.8;
+      opacity: 0.95;
       animation: sparkle-fly 0.7s cubic-bezier(.4,1.8,.68,.98) forwards;
+      z-index: 11;
     }
     @keyframes sparkle-fly {
-      0% {transform: scale(0.2);}
-      80% {transform: scale(1.4);}
-      100% {opacity: 0; transform: translateY(-60px) scale(0.4);}
-    }
-    /* Kids style */
-    .kids {
-      --main-color: #ffbb00;
-      --cell-bg: #ffeccc;
-    }
-    /* Pastel style */
-    .pastel {
-      --main-color: #ffb6d6;
-      --cell-bg: #fff7fa;
+      0% {transform: scale(0.15);}
+      85% {transform: scale(1.2);}
+      100% {opacity: 0; transform: translateY(-44px) scale(0.6);}
     }
     /* Neon style */
-    .neon {
-      --main-color: #00ffff;
-      --cell-bg: rgba(0,0,0,0.6);
-    }
+    .neon, .neon #container { --main-color: #00ffff; --cell-bg: rgba(0,0,0,0.60); --main-font: 'Orbitron', Arial, sans-serif; --cell-font: 'Orbitron', Arial, sans-serif;}
+    /* Pastel style */
+    .pastel, .pastel #container { --main-color: #ffb6d6; --cell-bg: #fff7fa; --main-font: 'Fredoka One', Arial, sans-serif; --cell-font: 'Fredoka One', Arial, sans-serif;}
+    /* Kids style */
+    .kids, .kids #container { --main-color: #ffa505; --cell-bg: #ffe9bb; --main-font: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif; --cell-font: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;}
     /* Magic style */
-    .magic {
-      --main-color: #97faff;
-      --cell-bg: #21222f;
-      animation: magicBg 3s linear infinite alternate;
+    .magic, .magic #container {
+      --main-color: #b5f6fc;
+      --cell-bg: #192035;
+      --main-font: 'Orbitron', Arial, sans-serif;
+      --cell-font: 'Orbitron', Arial, sans-serif;
+      animation: magicBg 3.3s linear infinite alternate;
     }
     @keyframes magicBg {
-      0% { filter: brightness(1) hue-rotate(0deg);}
-      100% { filter: brightness(1.1) hue-rotate(20deg);}
+      0% { filter: brightness(1.04) hue-rotate(0deg);}
+      100% { filter: brightness(1.15) hue-rotate(18deg);}
     }
+    /* Words list */
     #wordsList {
       list-style: none;
-      padding: 10px 12px;
+      padding: 13px 14px;
       margin: 0;
       background: rgba(0,0,0,0.18);
-      border-radius: 10px;
+      border-radius: 11px;
       border: 2px solid var(--main-color, #00ffff);
       max-height: 90vh;
-      min-width: 120px;
+      min-width: 118px;
       color: var(--main-color, #00ffff);
       font-size: 18px;
+      font-family: var(--main-font, Arial, sans-serif);
     }
     #wordsList li {
-      margin-bottom: 8px;
-      padding: 3px 0;
+      margin-bottom: 9px;
+      padding: 4px 0;
       border-bottom: 1px solid var(--main-color, #00ffff);
       transition: 0.2s;
     }
     #wordsList li.found {
       text-decoration: line-through;
       color: #aaa;
-      opacity: 0.8;
+      opacity: 0.78;
     }
     #messageBox {
       position: absolute;
-      top: 40%;
+      top: 43%;
       left: 50%;
       transform: translate(-50%,-50%);
-      background: rgba(0,0,0,0.9);
-      padding: 30px 50px;
-      border-radius: 20px;
+      background: rgba(0,0,0,0.92);
+      padding: 30px 52px;
+      border-radius: 22px;
       border: 3px solid var(--main-color, #00ffff);
       color: var(--main-color, #00ffff);
-      font-size: 28px;
+      font-size: 27px;
       font-weight: bold;
       text-align: center;
       display: none;
       z-index: 100;
-      text-shadow: 0 0 24px var(--main-color,#00ffff80);
+      text-shadow: 0 0 20px var(--main-color,#00ffff80);
+      font-family: var(--main-font, Arial, sans-serif);
     }
-    /* Hide logo and title in game! */
     #kgbLogo, #kgbHeader { display: none !important; }
   </style>
 </head>
@@ -215,12 +207,9 @@ const alphabetLetters = ALPHABETS[alphabet] || ALPHABETS.latin;
 function formatLetter(l) {
   return caseType === "lowercase" ? l.toLowerCase() : l.toUpperCase();
 }
-
-// Apply style
 document.body.className = style;
 document.getElementById('container').className = style;
 
-// Grid logic
 const grid = Array.from({length:gridSize},()=>Array(gridSize).fill(""));
 function placeWords() {
   for (const wordRaw of words) {
@@ -252,23 +241,21 @@ function placeWords() {
     if (!grid[y][x]) grid[y][x]=formatLetter(alphabetLetters[Math.floor(Math.random()*alphabetLetters.length)]);
 }
 
-// State
 let selection=[],foundWords=[],cells=[],isSelecting=false;
 const gridEl=document.getElementById('grid'),wordsListEl=document.getElementById('wordsList'),messageBox=document.getElementById('messageBox');
 const clickSound=document.getElementById('clickSound'),errorSound=document.getElementById('errorSound'),winSound=document.getElementById('winSound');
 clickSound.volume=1; errorSound.volume=1; winSound.volume=1;
 
-// Sparkle effect
 function spawnSparkle(cell) {
   if (!sparkles) return;
-  for (let i=0;i<4+Math.floor(Math.random()*2);i++) {
+  for (let i=0;i<4+Math.floor(Math.random()*3);i++) {
     const s=document.createElement('div');
     s.className='sparkle';
-    s.style.left = (cell.offsetLeft+18+Math.random()*10)+'px';
-    s.style.top = (cell.offsetTop+18+Math.random()*10)+'px';
+    s.style.left = (cell.offsetLeft+16+Math.random()*12)+'px';
+    s.style.top = (cell.offsetTop+16+Math.random()*12)+'px';
     s.style.background = `radial-gradient(circle at 60% 40%,#fff,#${Math.floor(Math.random()*16777215).toString(16)} 80%,transparent 100%)`;
     gridEl.appendChild(s);
-    setTimeout(()=>s.remove(), 650+Math.random()*150);
+    setTimeout(()=>s.remove(), 700+Math.random()*180);
   }
 }
 
