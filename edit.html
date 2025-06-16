@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -12,17 +11,11 @@
       color: #0ff;
       font-family: 'Orbitron', sans-serif;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
+      flex-direction: row;
+      justify-content: space-between;
+      padding: 40px;
       height: 100vh;
-      padding-top: 60px;
-    }
-
-    h1 {
-      color: #0ff;
-      text-shadow: 0 0 10px #0ff;
-      text-align: center;
+      box-sizing: border-box;
     }
 
     .editor-box {
@@ -30,16 +23,27 @@
       border: 2px solid #0ff;
       border-radius: 20px;
       padding: 20px;
-      width: 800px;
-      max-width: 90%;
+      width: 55%;
       display: flex;
       flex-direction: column;
       gap: 15px;
       box-shadow: 0 0 15px #0ff80f88;
     }
 
+    .result-box {
+      background: #000;
+      border: 1px dashed #0ff;
+      border-radius: 10px;
+      padding: 15px;
+      color: #0ff;
+      width: 40%;
+      height: fit-content;
+      font-size: 12px;
+      word-break: break-word;
+    }
+
     label {
-      font-size: 16px;
+      font-size: 14px;
     }
 
     textarea, input, select {
@@ -55,7 +59,6 @@
     }
 
     button {
-      margin-top: 10px;
       padding: 12px;
       font-size: 16px;
       background-color: #0ff;
@@ -73,33 +76,121 @@
       box-shadow: 0 0 20px #00ffff;
     }
 
+    .checkboxes {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
     .footer {
-      margin-top: 20px;
+      position: absolute;
+      bottom: 10px;
+      left: 80px;
       font-size: 14px;
       color: #0ff8;
-      text-align: center;
     }
 
     .logo {
       position: absolute;
       top: 10px;
       left: 10px;
-      width: 60px;
+      width: 50px;
     }
 
-    #resultContainer {
-      background: #000;
-      border: 1px dashed #0ff;
-      padding: 10px;
-      margin-top: 20px;
-      border-radius: 10px;
+    h1 {
+      position: absolute;
+      top: 15px;
+      left: 80px;
+      font-size: 20px;
       color: #0ff;
-      font-size: 14px;
-      word-break: break-word;
+      text-shadow: 0 0 10px #0ff;
     }
   </style>
 </head>
 <body>
   <img class="logo" src="https://nikashum93.github.io/pusyriki/assets/kgb-logo.png" alt="KGB Logo">
-  <h1>РЕДАКТОР WORDSEARCH КГБ</h1>
-  <div class="editor
+  <h1>Корпорация Геймификации Будущего</h1>
+
+  <div class="editor-box">
+    <label for="words">Слова (через запятую или с новой строки):</label>
+    <textarea id="words" rows="4" placeholder="apple, banana, robot..."></textarea>
+
+    <label for="alphabet">Язык / Алфавит:</label>
+    <select id="alphabet">
+      <option value="latin">Латиница (английский)</option>
+      <option value="cyrillic">Кириллица (русский)</option>
+      <option value="french">Французский</option>
+      <option value="german">Немецкий</option>
+      <option value="spanish">Испанский</option>
+      <option value="pinyin">Китайский (пиньинь)</option>
+      <option value="hiragana">Японский (хирагана)</option>
+    </select>
+
+    <label for="case">Регистр букв:</label>
+    <select id="case">
+      <option value="uppercase">ЗАГЛАВНЫЕ</option>
+      <option value="lowercase">строчные</option>
+    </select>
+
+    <label for="level">Сложность:</label>
+    <select id="level">
+      <option value="easy">Лёгкий (→ ↓)</option>
+      <option value="medium">Средний (диагонали)</option>
+      <option value="hard">Сложный (все направления)</option>
+    </select>
+
+    <label for="style">Стиль оформления:</label>
+    <select id="style">
+      <option value="neon">Неон</option>
+      <option value="pastel">Пастель</option>
+      <option value="kids">Детский</option>
+      <option value="magic">Магический</option>
+    </select>
+
+    <label for="winText">Финальное сообщение:</label>
+    <input type="text" id="winText" placeholder="Молодец! Все слова найдены!">
+
+    <div class="checkboxes">
+      <label><input type="checkbox" id="sparkles"> ✨ Включить блестяшки</label>
+      <label><input type="checkbox" id="glossy"> 💎 Включить глянец</label>
+    </div>
+
+    <button onclick="generateIframe()">Сгенерировать код вставки</button>
+  </div>
+
+  <div class="result-box" id="resultBox" style="display:none;"></div>
+
+  <div class="footer">© КГБ</div>
+
+  <script>
+    function generateIframe() {
+      const wordsRaw = document.getElementById('words').value;
+      const alphabet = document.getElementById('alphabet').value;
+      const level = document.getElementById('level').value;
+      const style = document.getElementById('style').value;
+      const letterCase = document.getElementById('case').value;
+      const winText = document.getElementById('winText').value;
+      const sparkles = document.getElementById('sparkles').checked ? 1 : 0;
+      const glossy = document.getElementById('glossy').checked ? 1 : 0;
+
+      const wordsList = wordsRaw.split(/[\n,]+/).map(w => w.trim()).filter(w => w);
+
+      const params = new URLSearchParams({
+        words: wordsList.join(','),
+        level,
+        style,
+        case: letterCase,
+        winText,
+        alphabet,
+        sparkles,
+        glossy
+      });
+
+      const iframeCode = `<iframe src="https://nikashum93.github.io/wordsearch/main.html?${params.toString()}" width="960" height="540" frameborder="0" allowfullscreen></iframe>`;
+      const resultBox = document.getElementById('resultBox');
+      resultBox.style.display = 'block';
+      resultBox.textContent = iframeCode;
+    }
+  </script>
+</body>
+</html>
