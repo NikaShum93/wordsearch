@@ -7,7 +7,6 @@
   <style>
     :root {
       --main-color: #00ffff;
-      --kids-palette: #ff7c4d, #ffd600, #3cff74, #40c4ff, #ee55ff, #fff600;
     }
     html, body {
       margin: 0; padding: 0;
@@ -114,11 +113,15 @@
     .cell.kids {
       font-family: 'Comic Neue', 'Fredoka One', Arial, sans-serif;
       font-size: 26px;
-      background: #fff6;
-      color: #222;
-      border: 2px solid #ffd600;
-      text-shadow: 0 0 2px #fff, 0 0 8px #ffe0;
-      box-shadow: 0 0 7px #ffd600b0;
+      background: #181e28;
+      color: #fff;
+      border-width: 3px;
+      border-radius: 14px;
+      text-shadow: 0 0 4px #fff, 0 0 13px #fff7;
+      box-shadow: 0 0 14px #fff4, 0 0 1.5px #fff, 0 0 4px #2228;
+      font-weight: bold;
+      letter-spacing: 0.01em;
+      transition: border 0.18s, box-shadow 0.18s;
     }
     #wordsList {
       list-style: none;
@@ -133,6 +136,10 @@
       font-size: 18px;
       margin-left: 0;
     }
+    #wordsList.kids {
+      border: 3px solid #40c4ff;
+      background: #181e2840;
+    }
     #wordsList li {
       margin-bottom: 9px;
       padding: 6px;
@@ -143,9 +150,17 @@
       background: rgba(255,255,255,0.06);
       transition: background 0.2s;
     }
+    #wordsList.kids li {
+      border: 2px solid #40c4ff;
+      background: #22315e;
+      color: #fff;
+      font-family: 'Comic Neue', 'Fredoka One', Arial, sans-serif;
+      font-size: 21px;
+      margin-bottom: 12px;
+    }
     #wordsList li.found {
       text-decoration: line-through;
-      color: #888;
+      color: #aaa;
       background: #aaffc66a;
       border: 1px solid #8eeabd;
     }
@@ -231,7 +246,6 @@
     const errorSound = document.getElementById("errorSound");
     const winSound = document.getElementById("winSound");
 
-    // --- НАСТРОЙКИ ЗВУКА ---
     clickSound.volume = 1.0;
     errorSound.volume = 1.0;
     winSound.volume = 0.8;
@@ -239,14 +253,12 @@
     // --- ТЕМА/СТИЛЬ ---
     function applyTheme() {
       let color = "#00ffff";
-      let font = "'Orbitron', Arial, sans-serif";
       if (style === "neon") color = "#00ffff";
       if (style === "pastel") color = "#ff99cc";
-      if (style === "kids") color = "#ffb700";
+      if (style === "kids") color = "#40c4ff";
       if (style === "magic") color = "#38ffec";
       if (style === "rainbow") color = "#ff00c8";
       document.documentElement.style.setProperty('--main-color', color);
-      document.documentElement.style.setProperty('--cell-font', font);
     }
 
     // --- РЕГИСТР ---
@@ -255,73 +267,65 @@
       return letter.toUpperCase();
     }
 
-    // --- РАНДОМНО ЦВЕТ ДЕТСКИЙ ---
-    function getKidsColor(i) {
-      const palette = ["#ff7c4d", "#ffd600", "#3cff74", "#40c4ff", "#ee55ff", "#fff600"];
-      return palette[i % palette.length];
-    }
+    // --- Радужные цвета для детских клеток ---
+    const kidsPalette = [
+      "#ff4da6", "#ffd600", "#3cff74", "#40c4ff", "#ee55ff", "#ff7c4d", "#fff600"
+    ];
 
     // --- ВСТАВКА СЛОВ ---
     function placeWords() {
-  // Очищаем сетку
-  for (let y = 0; y < gridSize; y++) for (let x = 0; x < gridSize; x++) grid[y][x] = "";
-
-  // Вставляем слова
-  for (const wordRaw of words) {
-    const word = formatWord(wordRaw);
-    let placed = false;
-    for (let attempt = 0; attempt < 120; attempt++) {
-      const dirOptions = {
-        easy: [[1,0],[0,1]],
-        medium: [[1,0],[0,1],[1,1]],
-        hard: [[1,0],[0,1],[1,1],[-1,1],[1,-1],[0,-1],[-1,0],[-1,-1]]
-      }[level];
-      const [dx, dy] = dirOptions[Math.floor(Math.random() * dirOptions.length)];
-      const x = Math.floor(Math.random() * gridSize);
-      const y = Math.floor(Math.random() * gridSize);
-
-      let fits = true;
-      for (let i = 0; i < word.length; i++) {
-        const nx = x + dx * i, ny = y + dy * i;
-        if (nx < 0 || ny < 0 || nx >= gridSize || ny >= gridSize) { fits = false; break; }
-        if (grid[ny][nx] && grid[ny][nx] !== word[i]) { fits = false; break; }
-      }
-      if (fits) {
-        for (let i = 0; i < word.length; i++) {
-          const nx = x + dx * i, ny = y + dy * i;
-          grid[ny][nx] = word[i];
+      for (let y = 0; y < gridSize; y++) for (let x = 0; x < gridSize; x++) grid[y][x] = "";
+      for (const wordRaw of words) {
+        const word = formatWord(wordRaw);
+        let placed = false;
+        for (let attempt = 0; attempt < 120; attempt++) {
+          const dirOptions = {
+            easy: [[1,0],[0,1]],
+            medium: [[1,0],[0,1],[1,1]],
+            hard: [[1,0],[0,1],[1,1],[-1,1],[1,-1],[0,-1],[-1,0],[-1,-1]]
+          }[level];
+          const [dx, dy] = dirOptions[Math.floor(Math.random() * dirOptions.length)];
+          const x = Math.floor(Math.random() * gridSize);
+          const y = Math.floor(Math.random() * gridSize);
+          let fits = true;
+          for (let i = 0; i < word.length; i++) {
+            const nx = x + dx * i, ny = y + dy * i;
+            if (nx < 0 || ny < 0 || nx >= gridSize || ny >= gridSize) { fits = false; break; }
+            if (grid[ny][nx] && grid[ny][nx] !== word[i]) { fits = false; break; }
+          }
+          if (fits) {
+            for (let i = 0; i < word.length; i++) {
+              const nx = x + dx * i, ny = y + dy * i;
+              grid[ny][nx] = word[i];
+            }
+            placed = true;
+            break;
+          }
         }
-        placed = true;
-        break;
+        if (!placed) {
+          console.warn('Не удалось вставить слово: ' + wordRaw);
+        }
+      }
+      for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+          if (!grid[y][x]) {
+            let rnd = alphabetSet[Math.floor(Math.random() * alphabetSet.length)];
+            grid[y][x] = formatLetter(rnd);
+          }
+        }
       }
     }
-    // Если не удалось вставить слово — ошибка или пропуск
-    if (!placed) {
-      console.warn('Не удалось вставить слово: ' + wordRaw);
-    }
-  }
-  // Заполняем оставшиеся клетки случайными буквами из выбранного алфавита
-  for (let y = 0; y < gridSize; y++) {
-    for (let x = 0; x < gridSize; x++) {
-      if (!grid[y][x]) {
-        let rnd = alphabetSet[Math.floor(Math.random() * alphabetSet.length)];
-        grid[y][x] = formatLetter(rnd);
-      }
-    }
-  }
-}
-    // --- СЛОВО В ПРАВИЛЬНОМ РЕГИСТРЕ/АЛФАВИТЕ ---
     function formatWord(word) {
-  // Только буквы из алфавита, правильный кейс
-  return [...word]
-    .map(l => l.normalize('NFD').replace(/[\u0300-\u036f]/g, '')) // убрать диакритику
-    .map(l => {
-      let up = l.toUpperCase();
-      if (alphabetSet.includes(up)) return formatLetter(up);
-      return null;
-    })
-    .filter(l => l !== null);
-}
+      return [...word]
+        .map(l => l.normalize('NFD').replace(/[\u0300-\u036f]/g, ''))
+        .map(l => {
+          let up = l.toUpperCase();
+          if (alphabetSet.includes(up)) return formatLetter(up);
+          return null;
+        })
+        .filter(l => l !== null);
+    }
+
     // --- ОТРИСОВКА ---
     function renderGrid() {
       gridEl.innerHTML = "";
@@ -329,10 +333,12 @@
         for (let x = 0; x < gridSize; x++) {
           const cell = document.createElement("div");
           cell.className = "cell";
-          // Эффекты стиля
+          // Детский стиль — радужные рамки и "Comic Neue"
           if (style === "kids") {
             cell.classList.add("kids");
-            cell.style.color = getKidsColor(y * gridSize + x);
+            const color = kidsPalette[(x + y) % kidsPalette.length];
+            cell.style.borderColor = color;
+            cell.style.boxShadow = `0 0 9px 2px ${color}, 0 0 4px #fff8`;
           }
           if (style === "magic" || sparklesOn) cell.classList.add("glossy");
           if (style === "rainbow") cell.classList.add("rainbow");
@@ -345,6 +351,12 @@
           cell.textContent = grid[y][x];
           gridEl.appendChild(cell);
         }
+      }
+      // Список слов — радужная рамка только для kids
+      if (style === "kids") {
+        wordsListEl.classList.add("kids");
+      } else {
+        wordsListEl.classList.remove("kids");
       }
     }
 
@@ -365,7 +377,6 @@
         sparkle.className = 'sparkle';
         sparkle.style.left = x + 'px';
         sparkle.style.top = y + 'px';
-        // Направление
         const angle = Math.random() * 2 * Math.PI;
         const dist = 21 + Math.random() * 18;
         sparkle.style.setProperty('--tx', `${Math.cos(angle)*dist}px`);
@@ -375,7 +386,6 @@
       }
     }
 
-    // --- ВЗАИМОДЕЙСТВИЕ ---
     let selection = [];
     let foundWords = [];
 
@@ -407,7 +417,6 @@
       cell.classList.add("selected");
       selection.push(cell);
       if ((style === "magic" || sparklesOn) && selection.length === 1) {
-        // Только при первом клике
         const rect = cell.getBoundingClientRect();
         createSparkles(rect.left + rect.width / 2, rect.top + rect.height / 2, document.body);
       }
@@ -436,7 +445,6 @@
       }
     }
 
-    // --- СТАРТ ---
     applyTheme();
     placeWords();
     renderGrid();
