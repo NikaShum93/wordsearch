@@ -3,98 +3,126 @@
 <head>
   <meta charset="UTF-8">
   <title>Редактор Wordsearch — КГБ</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
-      width: 100vw; height: 100vh;
-      background: radial-gradient(circle, #19191c 40%, #07070b 100%);
+      margin: 0; padding: 0;
+      background: radial-gradient(circle, #181a1e 60%, #07080e 100%);
       font-family: 'Orbitron', Arial, sans-serif;
+      width: 100vw; height: 100vh;
       overflow: hidden;
     }
-    .container {
+    .mainbar {
       display: flex;
       flex-direction: row;
-      justify-content: center;
       align-items: flex-start;
-      height: 100vh;
+      justify-content: center;
       width: 100vw;
-      gap: 36px;
-      box-sizing: border-box;
-      padding: 38px 36px 0 36px;
-      min-width: 900px;
+      min-width: 960px;
+      max-width: 1280px;
+      height: 100vh;
+      padding: 0 0 0 0;
+      gap: 30px;
     }
-    .editor {
-      background: rgba(0,0,0,0.6);
+    .settings-panel {
+      width: 480px;
+      min-width: 320px;
+      max-width: 520px;
+      background: rgba(0,0,0,0.63);
       border: 2px solid #0ff;
       border-radius: 18px;
       box-shadow: 0 0 20px #0ff4;
-      padding: 28px 24px 24px 24px;
-      width: 440px;
-      min-width: 320px;
-      max-width: 520px;
+      margin-top: 28px;
+      margin-left: 26px;
+      padding: 18px 22px 12px 22px;
       display: flex;
       flex-direction: column;
-      gap: 13px;
-    }
-    .result-block {
-      background: #000c;
-      border: 2px dashed #0ff;
-      border-radius: 12px;
-      color: #0ff;
-      padding: 24px 20px 16px 20px;
-      margin-top: 44px;
-      width: 420px;
-      min-width: 260px;
-      max-width: 520px;
-      height: fit-content;
-      font-size: 14px;
-      box-shadow: 0 0 16px #0ff4 inset;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
+      gap: 12px;
     }
     .logo-bar {
       display: flex;
       align-items: center;
-      gap: 18px;
-      margin-bottom: 6px;
+      gap: 16px;
+      margin-bottom: 5px;
     }
     .kgb-logo {
-      width: 48px; height: 48px;
-      border-radius: 50%;
-      box-shadow: 0 0 12px #0ff4;
+      width: 40px; height: 40px; border-radius: 50%;
+      box-shadow: 0 0 8px #0ff4;
+      flex-shrink: 0;
     }
     .kgb-title {
       color: #0ff;
-      font-size: 22px;
-      text-shadow: 0 0 16px #0ff;
+      font-size: 21px;
+      text-shadow: 0 0 14px #0ff;
       font-family: 'Orbitron', Arial, sans-serif;
       font-weight: 600;
       letter-spacing: 1px;
+      margin-left: 0;
+      line-height: 1.15;
+      white-space: nowrap;
     }
     label {
       font-size: 14px;
-      margin-bottom: 2px;
       color: #0ff;
       text-shadow: 0 0 4px #0ff7;
+      margin-top: 3px;
     }
     textarea, input, select {
       width: 100%;
-      padding: 9px 11px;
-      background: #030611;
+      padding: 8px 10px;
+      background: #101a1c;
       color: #0ff;
       border: 1px solid #0ff;
       border-radius: 7px;
-      font-family: 'Orbitron', Arial, sans-serif;
+      font-family: inherit;
       font-size: 14px;
-      margin-bottom: 4px;
-      margin-top: 1px;
+      margin-bottom: 3px;
+      margin-top: 2px;
+      box-sizing: border-box;
     }
-    button {
-      padding: 13px 0;
-      font-size: 17px;
+    .checkboxes {
+      display: flex;
+      flex-direction: row;
+      gap: 18px;
+      margin-bottom: 2px;
+      margin-top: 0;
+    }
+    .footer {
+      font-size: 12px;
+      color: #0ff7;
+      opacity: 0.7;
+      margin-top: 16px;
+      margin-left: 1px;
+    }
+    .code-panel {
+      width: 340px;
+      min-width: 250px;
+      max-width: 440px;
+      background: rgba(0,0,0,0.55);
+      border: 2px dashed #0ff;
+      border-radius: 12px;
+      color: #0ff;
+      padding: 16px 18px 16px 18px;
+      margin-top: 50px;
+      height: fit-content;
+      box-shadow: 0 0 16px #0ff4 inset;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      position: relative;
+    }
+    .code-label {
+      color: #0ff;
+      font-size: 15px;
+      margin-bottom: 8px;
+      font-family: 'Orbitron', Arial, sans-serif;
+      text-shadow: 0 0 8px #0ff4;
+    }
+    .gen-btn {
+      position: absolute;
+      right: 20px; top: -44px;
+      padding: 11px 20px;
+      font-size: 15px;
       background-color: #0ff;
       color: #000;
       font-weight: bold;
@@ -103,33 +131,17 @@
       cursor: pointer;
       box-shadow: 0 0 12px #0ff7;
       transition: 0.3s;
-      margin-top: 10px;
+      font-family: inherit;
     }
-    button:hover {
-      background-color: #00cccc;
-      box-shadow: 0 0 20px #0ff;
-    }
-    .checkboxes {
-      display: flex;
-      flex-direction: row;
-      gap: 22px;
-      margin-bottom: 2px;
-      margin-top: 3px;
-    }
-    .footer {
-      position: absolute;
-      left: 60px;
-      bottom: 10px;
-      font-size: 13px;
-      color: #0ff8;
-      opacity: 0.85;
-      letter-spacing: 1px;
+    .gen-btn:hover {
+      background-color: #fff;
+      color: #111;
     }
     .copy-btn {
       background: #0ff;
       color: #000;
-      padding: 7px 20px;
-      font-size: 13px;
+      padding: 8px 0;
+      font-size: 14px;
       font-family: inherit;
       font-weight: bold;
       border: none;
@@ -139,12 +151,12 @@
       box-shadow: 0 0 10px #0ff7;
       transition: background 0.22s;
     }
-    .copy-btn:hover { background: #fff; }
+    .copy-btn:hover { background: #fff; color: #222; }
     .codearea {
       width: 100%;
       min-height: 65px;
       border-radius: 6px;
-      margin-top: 8px;
+      margin-top: 7px;
       font-size: 13px;
       padding: 7px;
       background: #101b1f;
@@ -155,21 +167,21 @@
       font-family: 'Fira Mono', 'Consolas', monospace;
     }
     @media (max-width:1100px) {
-      .container { flex-direction: column; align-items: center; gap:22px; padding:16px; }
-      .result-block { margin-top:12px; }
-      .footer { left:12px; font-size:12px;}
+      .mainbar { flex-direction: column; align-items: center; gap:18px;}
+      .settings-panel { margin-left: 0;}
+      .code-panel { margin-top: 16px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="editor">
+  <div class="mainbar">
+    <div class="settings-panel">
       <div class="logo-bar">
         <img class="kgb-logo" src="https://nikashum93.github.io/pusyriki/assets/kgb-logo.png" alt="KGB Logo">
         <div class="kgb-title">Корпорация Геймификации Будущего</div>
       </div>
       <label for="words">Слова (через запятую или с новой строки):</label>
-      <textarea id="words" rows="3" placeholder="apple, banana, robot..."></textarea>
+      <textarea id="words" rows="2" placeholder="apple, banana, robot..."></textarea>
       <label for="alphabet">Язык / Алфавит:</label>
       <select id="alphabet">
         <option value="latin">Латиница (английский)</option>
@@ -204,15 +216,15 @@
         <label><input type="checkbox" id="sparkles"> ✨ Блестяшки</label>
         <label><input type="checkbox" id="glossy"> 💎 Глянец</label>
       </div>
-      <button onclick="generateIframe()">Сгенерировать код вставки</button>
+      <div class="footer">© Корпорация Геймификации Будущего, 2024</div>
     </div>
-    <div class="result-block">
-      <label for="codearea">Код для вставки в Genially:</label>
+    <div class="code-panel">
+      <button class="gen-btn" onclick="generateIframe()">Сгенерировать код вставки</button>
+      <div class="code-label">Код для вставки в <span style="color:#19fff5;">Genially:</span></div>
       <textarea id="codearea" class="codearea" readonly></textarea>
       <button class="copy-btn" onclick="copyIframe()">Скопировать</button>
     </div>
   </div>
-  <div class="footer">© Корпорация Геймификации Будущего, 2024</div>
   <script>
     function generateIframe() {
       const wordsRaw = document.getElementById('words').value;
