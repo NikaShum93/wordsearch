@@ -1,16 +1,14 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Wordsearch by KGB</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
   <style>
     html, body {
       margin: 0;
       padding: 0;
       background: transparent;
-      font-family: 'Orbitron', sans-serif;
+      font-family: 'Arial', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -23,58 +21,32 @@
       align-items: center;
     }
 
-    #game {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-    }
-
     #grid {
       display: grid;
       grid-template-columns: repeat(10, 1fr);
       gap: 5px;
-      background: transparent;
     }
 
     .cell {
       position: relative;
       width: 45px;
       height: 45px;
-      background: rgba(0, 0, 0, 0.3);
-      border: 2px solid var(--main-color, #00ffff);
-      box-shadow: 0 0 6px var(--main-color, #00ffff);
-      color: var(--main-color, #00ffff);
+      border: 2px solid var(--main-color, #0ff);
+      color: var(--main-color, #0ff);
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 8px;
       display: flex;
       justify-content: center;
       align-items: center;
       font-size: 22px;
+      font-weight: bold;
       user-select: none;
       cursor: pointer;
-      transition: 0.3s;
-      border-radius: 8px;
-      font-weight: bold;
-      overflow: hidden;
-      text-shadow: 0 0 5px var(--main-color);
+      box-shadow: 0 0 8px var(--main-color, #0ff);
     }
 
-    .cell.selected {
-      background: var(--main-color, #00ffff);
-      color: #000;
-    }
-
-    .cell.correct {
-      background: #2ecc71;
-      color: #000;
-    }
-
-    .cell.error {
-      background: #e74c3c;
-      color: #fff;
-    }
-
-    .cell::after {
-      content: "";
+    .glossy::after {
+      content: '';
       position: absolute;
       top: 0;
       left: -100%;
@@ -89,23 +61,35 @@
       100% { transform: translateX(200%) rotateZ(45deg); }
     }
 
+    .cell.selected {
+      background: var(--main-color);
+      color: #000;
+    }
+
+    .cell.correct {
+      background: #2ecc71;
+      color: #000;
+    }
+
+    .cell.error {
+      background: #e74c3c;
+      color: #fff;
+    }
+
     #wordsList {
       list-style: none;
       padding: 10px;
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0,0,0,0.3);
       border-radius: 10px;
-      border: 2px solid var(--main-color, #00ffff);
-      max-height: 80vh;
-      overflow-y: auto;
+      border: 2px solid var(--main-color, #0ff);
     }
 
     #wordsList li {
-      margin-bottom: 6px;
       padding: 4px;
-      border: 1px solid var(--main-color, #00ffff);
+      border: 1px solid var(--main-color, #0ff);
+      margin-bottom: 5px;
       border-radius: 6px;
       text-align: center;
-      font-size: 18px;
     }
 
     #wordsList li.found {
@@ -121,13 +105,29 @@
       background: rgba(0, 0, 0, 0.8);
       padding: 30px 50px;
       border-radius: 20px;
-      border: 3px solid var(--main-color, #00ffff);
-      color: var(--main-color, #00ffff);
+      border: 3px solid var(--main-color, #0ff);
+      color: var(--main-color, #0ff);
       font-size: 24px;
       font-weight: bold;
       text-align: center;
       display: none;
       z-index: 10;
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: white;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: sparkle 0.5s ease-out forwards;
+      z-index: 100;
+    }
+
+    @keyframes sparkle {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(2) translateY(-10px); }
     }
 
     .rainbow {
@@ -143,43 +143,22 @@
       100% { color: violet; }
     }
 
-    .sparkle {
-      position: absolute;
-      width: 6px;
-      height: 6px;
-      background: white;
-      border-radius: 50%;
-      pointer-events: none;
-      animation: sparkle 0.5s ease-out forwards;
-    }
-
-    @keyframes sparkle {
-      0% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0; transform: scale(2) translateY(-10px); }
-    }
-
-    #kgbHeader {
-      position: absolute;
-      top: 10px;
-      left: 80px;
-      font-size: 18px;
-      color: #0ff;
-      text-shadow: 0 0 10px #0ff;
-    }
-
-    #logo {
+    #logo, #kgbHeader {
       position: absolute;
       top: 10px;
       left: 10px;
-      width: 60px;
+      color: #0ff;
+      font-weight: bold;
+      text-shadow: 0 0 10px #0ff;
+    }
+
+    #kgbHeader {
+      left: 80px;
+      font-size: 18px;
     }
   </style>
 </head>
 <body>
-  <script>const showEditorHeader = new URLSearchParams(window.location.search).get("edit") === "1";</script>
-<script>if (showEditorHeader) { document.write(`<img id="logo" src="https://nikashum93.github.io/pusyriki/assets/kgb-logo.png" alt="KGB Logo">
-  `); }</script>
-<script>if (showEditorHeader) { document.write(`<div id="kgbHeader">Корпорация Геймификации Будущего</div>`); }</script>
   <div id="container">
     <div id="game">
       <div id="grid"></div>
@@ -190,37 +169,54 @@
 
   <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const words = (urlParams.get("words") || "HAT,KEY,LAMP").split(",").map(w => w.trim());
-    const winText = decodeURIComponent(urlParams.get("winText") || "Ты нашёл все слова!");
+    const words = (urlParams.get("words") || "apple,banana,robot").split(",").map(w => w.trim());
+    const winText = urlParams.get("winText") || "Ты нашёл все слова!";
     const level = urlParams.get("level") || "medium";
     const style = urlParams.get("style") || "neon";
     const caseType = urlParams.get("case") || "upper";
+    const alphabetParam = urlParams.get("alphabet") || "latin";
+    const enableSparkles = urlParams.get("sparkles") === "true";
+    const enableGloss = urlParams.get("gloss") === "true";
 
+    const alphabets = {
+      latin: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      cyrillic: "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ",
+      french: "ABCDEFGHIJKLMNOPQRSTUVWXYZÇÉÀÈÙÂÊÎÔÛËÏÜ",
+      german: "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ",
+      spanish: "ABCDEFGHIJKLMNÑOPQRSTUVWXYZÁÉÍÓÚÜ"
+    };
+    const alphabet = alphabets[alphabetParam].split("");
     const gridSize = 10;
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(""));
 
     const gridEl = document.getElementById("grid");
     const wordsListEl = document.getElementById("wordsList");
     const messageBox = document.getElementById("messageBox");
 
-    function applyTheme() {
-      const root = document.documentElement;
-      if (style === "pastel") {
-        root.style.setProperty('--main-color', '#ff99cc');
-      } else if (style === "dark") {
-        root.style.setProperty('--main-color', '#00ffff');
-      } else if (style === "kids") {
-        root.style.setProperty('--main-color', '#ffcc00');
-      } else if (style === "magic") {
-        root.style.setProperty('--main-color', '#aaffff');
-      } else {
-        root.style.setProperty('--main-color', '#00ffff');
-      }
+    const isGeniallyEditor = document.referrer.includes("genially.com/editor");
+
+    if (isGeniallyEditor) {
+      const logo = document.createElement("img");
+      logo.src = "https://nikashum93.github.io/pusyriki/assets/kgb-logo.png";
+      logo.id = "logo";
+      document.body.appendChild(logo);
+
+      const header = document.createElement("div");
+      header.id = "kgbHeader";
+      header.innerText = "Корпорация Геймификации Будущего";
+      document.body.appendChild(header);
     }
 
     function formatLetter(letter) {
       return caseType === "lower" ? letter.toLowerCase() : letter.toUpperCase();
+    }
+
+    function applyTheme() {
+      let color = "#0ff";
+      if (style === "kids") color = "#ffcc00";
+      else if (style === "pastel") color = "#ff99cc";
+      else if (style === "magic") color = "#aaffff";
+      document.documentElement.style.setProperty("--main-color", color);
     }
 
     function placeWords() {
@@ -230,23 +226,20 @@
         hard: [[1,0],[0,1],[1,1],[-1,1],[1,-1],[0,-1],[-1,0],[-1,-1]]
       }[level];
 
-      for (const wordRaw of words) {
-        const word = formatLetter(wordRaw);
+      for (const raw of words) {
+        const word = formatLetter(raw);
         for (let attempt = 0; attempt < 100; attempt++) {
           const [dx, dy] = directions[Math.floor(Math.random() * directions.length)];
           const x = Math.floor(Math.random() * gridSize);
           const y = Math.floor(Math.random() * gridSize);
-
           let fits = true;
           for (let i = 0; i < word.length; i++) {
             const nx = x + dx * i;
             const ny = y + dy * i;
             if (nx < 0 || ny < 0 || nx >= gridSize || ny >= gridSize || (grid[ny][nx] && grid[ny][nx] !== word[i])) {
-              fits = false;
-              break;
+              fits = false; break;
             }
           }
-
           if (fits) {
             for (let i = 0; i < word.length; i++) {
               grid[y + dy * i][x + dx * i] = word[i];
@@ -269,6 +262,7 @@
         for (let x = 0; x < gridSize; x++) {
           const cell = document.createElement("div");
           cell.className = "cell";
+          if (enableGloss) cell.classList.add("glossy");
           cell.dataset.x = x;
           cell.dataset.y = y;
           cell.textContent = grid[y][x];
@@ -324,7 +318,6 @@
       cell.classList.add("selected");
       selection.push(cell);
       const selectedWord = selection.map(c => c.textContent).join("");
-
       const formattedWords = words.map(w => formatLetter(w));
       if (formattedWords.includes(selectedWord) && checkLine()) {
         selection.forEach(c => c.classList.add("correct"));
@@ -345,8 +338,10 @@
         }
       }
 
-      const rect = cell.getBoundingClientRect();
-      spawnSparkle(rect.left + 20, rect.top + 20);
+      if (enableSparkles) {
+        const rect = cell.getBoundingClientRect();
+        spawnSparkle(rect.left + 22, rect.top + 22);
+      }
     }
 
     applyTheme();
